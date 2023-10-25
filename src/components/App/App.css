@@ -1,0 +1,66 @@
+/* ==================MainPage============================ */
+.row_bacground_color_busy {
+  background-color: red;
+}
+.row_bacground_color_free {
+  background-color: green;
+}
+/* ====================================================== */
+/* =======================MainHeader===================== */
+.main_header {
+  height: 100px;
+  background: var(--Main, #434c63);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 58px;
+}
+.j_name {
+  color: #fff;
+  text-align: center;
+  font-family: Montserrat;
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 30px;
+  cursor: pointer;
+}
+.journal_name {
+  width: auto;
+  padding-top: 14px;
+}
+.name_of_teacher {
+  color: #fff;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 19px;
+}
+.btn_exit {
+  border-radius: 7px;
+  background: #353f57;
+  height: 51px;
+  color: #fff;
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  width: 113px;
+  border: none;
+  cursor: pointer;
+  margin-top: 25px;
+}
+.btn_exit:hover {
+  background: #353f57;
+  box-shadow: 0px 0px 20px 0px #232c41 inset;
+}
+.right_block {
+  display: flex;
+}
+.block_of_name {
+  padding-top: 40px;
+  padding-right: 40px;
+}
+
+/* ====================================================== */
