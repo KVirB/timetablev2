@@ -1,7 +1,9 @@
-import { SET_TIMETABLE } from "../types/mainTypes";
+import { act } from "react-dom/test-utils";
+import { SET_TIMETABLE, SET_DISCIPLINE } from "../types/mainTypes";
 
 let initialState = {
   timetable: [],
+  discipline: [],
 };
 const weekdays = {
   0: "Понедельник",
@@ -20,11 +22,11 @@ const lessonHours = {
   5: "15:45",
   6: "17:30",
   7: "19:15",
+  20: "",
 };
 const frame = {
   FIRST: 1,
   SECOND: 2,
-  THIRD: 3,
   FOURTH: 4,
   FIFTH: 5,
   UNKNOWN: "Неизвестно",
@@ -85,6 +87,11 @@ const mainReducer = (state = initialState, action) => {
       return {
         ...state,
         timetable: updatedTimetable,
+      };
+    case SET_DISCIPLINE:
+      return {
+        ...state,
+        discipline: [...action.discipline],
       };
     default:
       return state;

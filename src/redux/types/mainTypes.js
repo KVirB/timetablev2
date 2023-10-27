@@ -1,1 +1,2 @@
 export const SET_TIMETABLE = "SET_TIMETABLE";
+export const SET_DISCIPLINE = "SET_DISCIPLINE";

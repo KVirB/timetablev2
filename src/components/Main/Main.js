@@ -1,135 +1,23 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
-
 import "../App/App.css";
-
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
-
-import { getTimetableThunk } from "../../redux/actions/mainThunks";
+import {
+  getTimetableThunk,
+  getDisciplineThunk,
+} from "../../redux/actions/mainThunks";
 import { connect } from "react-redux";
 import ModalMain from "./ModalMain";
 const Main = (props) => {
-  // let [rowData, setRowData] = useState([
-  //   {
-  //     id: 596,
-  //     updated: "2023-10-20T10:10:19.5240294",
-  //     roomNumber: "101",
-  //     subGroup: 2,
-  //     day: 0,
-  //     lessonNumber: 2,
-  //     frame: "FOURTH",
-  //     roomType: "LECTURE",
-  //     disciplineName: "Высшая математика",
-  //     teacherFullName: "Никонова Татьяна Викторовна",
-  //     weekType: "ALWAYS",
-  //     group: "А-36",
-  //     roomId: 83,
-  //     lessonId: 596,
-  //     disciplineId: 67,
-  //     teacherId: 253,
-  //     groupId: 281,
-  //   },
-  //   {
-  //     id: 601,
-  //     updated: "2023-10-20T10:10:19.5240294",
-  //     roomNumber: "101",
-  //     subGroup: 2,
-  //     day: 0,
-  //     lessonNumber: 2,
-  //     frame: "FOURTH",
-  //     roomType: "LECTURE",
-  //     disciplineName: "Математика",
-  //     teacherFullName: "Никонова Татьяна Викторовна",
-  //     weekType: "ALWAYS",
-  //     group: "Тм-35",
-  //     roomId: 83,
-  //     lessonId: null,
-  //     disciplineId: 215,
-  //     teacherId: 253,
-  //     groupId: 284,
-  //   },
-  //   {
-  //     id: 601,
-  //     updated: "2023-10-20T10:10:19.5240294",
-  //     roomNumber: "101",
-  //     subGroup: 2,
-  //     day: 0,
-  //     lessonNumber: 2,
-  //     frame: "FOURTH",
-  //     roomType: "LECTURE",
-  //     disciplineName: "Математика",
-  //     teacherFullName: "Никонова Татьяна Викторовна",
-  //     weekType: "ALWAYS",
-  //     group: "Тм-35",
-  //     roomId: 83,
-  //     lessonId: null,
-  //     disciplineId: 215,
-  //     teacherId: 253,
-  //     groupId: 284,
-  //   },
-  //   {
-  //     id: 597,
-  //     updated: "2023-10-20T10:10:19.5240294",
-  //     roomNumber: "101",
-  //     subGroup: 2,
-  //     day: 0,
-  //     lessonNumber: 3,
-  //     frame: "FOURTH",
-  //     roomType: "LECTURE",
-  //     disciplineName: "Высшая математика",
-  //     teacherFullName: "Никонова Татьяна Викторовна",
-  //     weekType: "ALWAYS",
-  //     group: "А-36",
-  //     roomId: 83,
-  //     lessonId: 597,
-  //     disciplineId: 67,
-  //     teacherId: 253,
-  //     groupId: 281,
-  //   },
-  //   {
-  //     id: 601,
-  //     updated: "2023-10-20T10:10:19.5240294",
-  //     roomNumber: "101",
-  //     subGroup: 2,
-  //     day: 0,
-  //     lessonNumber: 2,
-  //     frame: "FOURTH",
-  //     roomType: "LECTURE",
-  //     disciplineName: "Математика",
-  //     teacherFullName: "Никонова Татьяна Викторовна",
-  //     weekType: "ALWAYS",
-  //     group: "Тм-35",
-  //     roomId: 83,
-  //     lessonId: null,
-  //     disciplineId: 215,
-  //     teacherId: 253,
-  //     groupId: 284,
-  //   },
-  //   {
-  //     id: 601,
-  //     updated: "2023-10-20T10:10:19.5240294",
-  //     roomNumber: "101",
-  //     subGroup: 2,
-  //     day: 0,
-  //     lessonNumber: 2,
-  //     frame: "FOURTH",
-  //     roomType: "LECTURE",
-  //     disciplineName: "Математика",
-  //     teacherFullName: "Никонова Татьяна Викторовна",
-  //     weekType: "ALWAYS",
-  //     group: "Тм-35",
-  //     roomId: 83,
-  //     lessonId: 601,
-  //     disciplineId: 215,
-  //     teacherId: 253,
-  //     groupId: 284,
-  //   },
-  // ]);
-
   const [columnDefs] = useState([
-    { field: "frameTable", rowGroup: true, hide: true, headerName: "Корпус" },
+    {
+      field: "frameTable",
+      rowGroup: true,
+      hide: true,
+      headerName: "Корпус",
+    },
     {
       field: "roomNumberTable",
       rowGroup: true,
@@ -150,7 +38,17 @@ const Main = (props) => {
     { field: "subGroupTable", headerName: "Подгруппа" },
     { field: "weekTypeTable", headerName: "Неделя" },
   ]);
-
+  const [dataRow, setDataRow] = useState();
+  const [gridApi, setGridApi] = useState(null);
+  const [filterText, setFilterText] = useState("");
+  const handleFilterChange = useCallback((e) => {
+    setFilterText(e.target.value);
+  }, []);
+  useEffect(() => {
+    if (gridApi) {
+      gridApi.setQuickFilter(filterText);
+    }
+  }, [filterText, gridApi]);
   const defaultColDef = useMemo(() => {
     return {
       flex: 1,
@@ -171,9 +69,7 @@ const Main = (props) => {
       },
     };
   }, []);
-
   const getRowStyle = useCallback((params) => {
-    console.log(params);
     if (params.data && params.data.lessonId !== null) {
       return { background: "red" };
     } else if (params.data && params.data.lessonId === null) {
@@ -181,13 +77,11 @@ const Main = (props) => {
     } else if (
       params.colDef &&
       params.colDef.field &&
-      params.colDef.field === "roomNumber" &&
-      params.colDef.field === "day"
+      (params.colDef.field === "roomNumber" || params.colDef.field === "day")
     ) {
       return { background: "white", textColor: "black" };
     }
   }, []);
-
   const gridOptions = useMemo(() => {
     return {
       getRowStyle: getRowStyle,
@@ -197,23 +91,22 @@ const Main = (props) => {
       animateRows: true,
       rowSelection: "single",
     };
-  }, [getRowStyle]);
-
-  const onGridReady = useCallback(() => {
-    props.getTimetableThunk();
-  }, []);
-
+  }, [getRowStyle, defaultColDef]);
+  const onGridReady = useCallback(
+    (params) => {
+      props.getTimetableThunk();
+      props.getDisciplineThunk();
+      setGridApi(params.api);
+    },
+    [props]
+  );
   const handleRowClicked = (data) => {
-    const dataRow = data.data;
-    console.log(dataRow);
+    setDataRow(data.data);
   };
-
   const [modalIsOpen, setIsOpen] = useState(false);
-
   const openModal = () => {
     setIsOpen(true);
   };
-
   const closeModal = () => {
     setIsOpen(false);
   };
@@ -223,36 +116,45 @@ const Main = (props) => {
         modalIsOpen={modalIsOpen}
         openModal={openModal}
         closeModal={closeModal}
+        dataRow={dataRow}
+        discipline={props.discipline}
       ></ModalMain>
       <div
         className="ag-theme-alpine"
         style={{
-          height: "100vh",
+          height: "calc(100vh - 150px)",
           width: "100vw",
           margin: "auto",
         }}
       >
-        {console.log(props.timetable)}
+        <input
+          type="text"
+          value={filterText}
+          onChange={handleFilterChange}
+          placeholder="Фильтр"
+        />
+
         <AgGridReact
           rowData={props.timetable}
           columnDefs={columnDefs}
           gridOptions={gridOptions}
           onGridReady={onGridReady}
           onRowClicked={handleRowClicked}
-          onRowDoubleClicked={openModal}
+          onRowDoubleClicked={dataRow && openModal}
+          suppressHorizontalScroll={true}
         ></AgGridReact>
       </div>
     </>
   );
 };
-
-let mapStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     timetable: state.mainPage.timetable,
+    discipline: state.mainPage.discipline,
   };
 };
 const mapDispatchToProps = {
   getTimetableThunk,
+  getDisciplineThunk,
 };
-
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

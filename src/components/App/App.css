@@ -5,6 +5,20 @@
 .row_bacground_color_free {
   background-color: green;
 }
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #ebebeb;
+  border: 4px solid transparent;
+  background-clip: content-box;
+  top: 0;
+}
+::-webkit-scrollbar-thumb {
+  background: #495471;
+  border-radius: 10px;
+}
 /* ====================================================== */
 /* =======================MainHeader===================== */
 .main_header {
@@ -64,3 +78,18 @@
 }
 
 /* ====================================================== */
+/* ====================MainModal========================= */
+.modal_open {
+  transform: none;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(26, 30, 46, 0.5);
+  z-index: 3;
+}
+/* ====================================================== */
+.custom-select {
+  width: 200px;
+}

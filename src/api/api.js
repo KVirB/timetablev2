@@ -6,9 +6,21 @@ const defaultOptionsPatent = {
     "Content-Type": "application/json",
   },
 };
+const defaultOptionsPatentDean = {
+  baseURL: "http://192.168.11.57:18076/",
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
 let baseRoutPatent = axios.create(defaultOptionsPatent);
+let baseRoutPatentDean = axios.create(defaultOptionsPatentDean);
 
 baseRoutPatent.interceptors.request.use(function (config) {
+  const token = JSON.parse(localStorage.getItem("user")).access_token;
+  config.headers.Authorization = token ? `Bearer ${token}` : "";
+  return config;
+});
+baseRoutPatentDean.interceptors.request.use(function (config) {
   const token = JSON.parse(localStorage.getItem("user")).access_token;
   config.headers.Authorization = token ? `Bearer ${token}` : "";
   return config;
@@ -26,6 +38,17 @@ export const unAuthorized = (error) => {
 export const getTimetable = () => {
   return baseRoutPatent
     .get(`/api/rooms`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      unAuthorized(error);
+    });
+};
+
+export const getDiscipline = () => {
+  return baseRoutPatentDean
+    .get(`/api/disciplines/active?is=true`)
     .then((response) => {
       return response.data;
     })

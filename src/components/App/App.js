@@ -15,7 +15,7 @@ function App() {
           <Route
             path="/main"
             element={
-              <RequireAuth role={["USER", "HEAD_OF_DEPARTMENT", "RECTOR"]}>
+              <RequireAuth role={["ADMIN"]}>
                 <Main />
               </RequireAuth>
             }
