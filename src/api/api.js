@@ -56,3 +56,36 @@ export const getDiscipline = () => {
       unAuthorized(error);
     });
 };
+
+export const getTeacher = () => {
+  return baseRoutPatentDean
+    .get(`/api/teachers/active?is=true`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      unAuthorized(error);
+    });
+};
+
+export const getGroup = () => {
+  return baseRoutPatentDean
+    .get(`/api/groups/active?is=true`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      unAuthorized(error);
+    });
+};
+
+export const updateTimetable = (dataRow) => {
+  return baseRoutPatent
+    .put(`/api/rooms/put`, dataRow)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      unAuthorized(error);
+    });
+};

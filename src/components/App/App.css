@@ -1,10 +1,4 @@
 /* ==================MainPage============================ */
-.row_bacground_color_busy {
-  background-color: red;
-}
-.row_bacground_color_free {
-  background-color: green;
-}
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -92,4 +86,26 @@
 /* ====================================================== */
 .custom-select {
   width: 200px;
+}
+.ag-cell {
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19px;
+}
+.ag-header-cell {
+  font-family: Roboto;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: bold;
+  line-height: 19px;
+}
+.ag-row:hover {
+  background: #434c63 !important;
+  color: white !important;
+}
+
+.ag-row:hover .ag-icon {
+  color: white !important;
 }

@@ -7,9 +7,49 @@ import "ag-grid-enterprise";
 import {
   getTimetableThunk,
   getDisciplineThunk,
+  getTeacherThunk,
+  getGroupThunk,
+  updateTimetableThunk,
+  editTimetableThunk,
 } from "../../redux/actions/mainThunks";
 import { connect } from "react-redux";
 import ModalMain from "./ModalMain";
+
+const dayComparator = (valueA, valueB) => {
+  const daysOfWeek = [
+    "Понедельник",
+    "Вторник",
+    "Среда",
+    "Четверг",
+    "Пятница",
+    "Суббота",
+    "Воскресенье",
+  ];
+
+  const indexA = daysOfWeek.indexOf(valueA);
+  const indexB = daysOfWeek.indexOf(valueB);
+
+  return indexA - indexB;
+};
+
+const timeComparator = (valueA, valueB) => {
+  const timeOfLesson = [
+    "8:00",
+    "9:50",
+    "11:40",
+    "14:00",
+    "15:45",
+    "17:30",
+    "19:15",
+    " ",
+  ];
+
+  const indexA = timeOfLesson.indexOf(valueA);
+  const indexB = timeOfLesson.indexOf(valueB);
+
+  return indexA - indexB;
+};
+
 const Main = (props) => {
   const [columnDefs] = useState([
     {
@@ -29,8 +69,14 @@ const Main = (props) => {
       rowGroup: true,
       hide: true,
       headerName: "День",
+      comparator: dayComparator,
     },
-    { field: "lessonNumberTable", headerName: "Время" },
+    {
+      field: "lessonNumberTable",
+      headerName: "Время",
+      comparator: timeComparator,
+      defaultSort: "asc",
+    },
     { field: "disciplineName", headerName: "Дисциплина" },
     { field: "lessonTypeTable", headerName: "Тип" },
     { field: "teacherFullName", headerName: "Преподаватель" },
@@ -39,6 +85,7 @@ const Main = (props) => {
     { field: "weekTypeTable", headerName: "Неделя" },
   ]);
   const [dataRow, setDataRow] = useState();
+  const [maxId, setMaxId] = useState();
   const [gridApi, setGridApi] = useState(null);
   const [filterText, setFilterText] = useState("");
   const handleFilterChange = useCallback((e) => {
@@ -55,31 +102,15 @@ const Main = (props) => {
       filter: true,
       minWidth: 100,
       sortable: true,
+      sortingOrder: ["asc", "desc"],
       resizable: true,
-      cellStyle: (params) => {
-        if (
-          params.colDef &&
-          params.colDef.field &&
-          params.colDef.field !== "roomNumber" &&
-          params.colDef.field !== "day"
-        ) {
-          return { color: "white" };
-        }
-        return null;
-      },
     };
   }, []);
   const getRowStyle = useCallback((params) => {
     if (params.data && params.data.lessonId !== null) {
-      return { background: "red" };
+      return { background: "#FF8484" };
     } else if (params.data && params.data.lessonId === null) {
-      return { background: "green" };
-    } else if (
-      params.colDef &&
-      params.colDef.field &&
-      (params.colDef.field === "roomNumber" || params.colDef.field === "day")
-    ) {
-      return { background: "white", textColor: "black" };
+      return { background: "#83CF55" };
     }
   }, []);
   const gridOptions = useMemo(() => {
@@ -96,12 +127,18 @@ const Main = (props) => {
     (params) => {
       props.getTimetableThunk();
       props.getDisciplineThunk();
+      props.getTeacherThunk();
+      props.getGroupThunk();
       setGridApi(params.api);
     },
     [props]
   );
   const handleRowClicked = (data) => {
     setDataRow(data.data);
+    const maxId = props.timetable.reduce((max, obj) => {
+      return obj.id > max ? obj.id : max;
+    }, 0);
+    setMaxId(maxId);
   };
   const [modalIsOpen, setIsOpen] = useState(false);
   const openModal = () => {
@@ -112,12 +149,21 @@ const Main = (props) => {
   };
   return (
     <>
+      {console.log(props.timetable, "store")}
       <ModalMain
         modalIsOpen={modalIsOpen}
         openModal={openModal}
         closeModal={closeModal}
         dataRow={dataRow}
         discipline={props.discipline}
+        teacher={props.teacher}
+        group={props.group}
+        typeOfLesson={props.typeOfLesson}
+        updateTimetableThunk={props.updateTimetableThunk}
+        timetable={props.timetable}
+        editTimetableThunk={props.editTimetableThunk}
+        maxId={maxId}
+        setDataRow={setDataRow}
       ></ModalMain>
       <div
         className="ag-theme-alpine"
@@ -131,9 +177,15 @@ const Main = (props) => {
           type="text"
           value={filterText}
           onChange={handleFilterChange}
-          placeholder="Фильтр"
+          placeholder="Поиск"
         />
-
+        <button
+          onClick={() => {
+            props.getTimetableThunk();
+          }}
+        >
+          bimba
+        </button>
         <AgGridReact
           rowData={props.timetable}
           columnDefs={columnDefs}
@@ -151,10 +203,17 @@ const mapStateToProps = (state) => {
   return {
     timetable: state.mainPage.timetable,
     discipline: state.mainPage.discipline,
+    teacher: state.mainPage.teacher,
+    group: state.mainPage.group,
+    typeOfLesson: state.mainPage.typeOfLesson,
   };
 };
 const mapDispatchToProps = {
   getTimetableThunk,
   getDisciplineThunk,
+  getTeacherThunk,
+  getGroupThunk,
+  updateTimetableThunk,
+  editTimetableThunk,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

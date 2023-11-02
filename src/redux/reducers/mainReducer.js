@@ -1,9 +1,16 @@
-import { act } from "react-dom/test-utils";
-import { SET_TIMETABLE, SET_DISCIPLINE } from "../types/mainTypes";
+import {
+  SET_TIMETABLE,
+  SET_DISCIPLINE,
+  SET_TEACHER,
+  SET_GROUP,
+  EDIT_TIMETABLE,
+} from "../types/mainTypes";
 
 let initialState = {
   timetable: [],
   discipline: [],
+  teacher: [],
+  group: [],
 };
 const weekdays = {
   0: "Понедельник",
@@ -22,7 +29,7 @@ const lessonHours = {
   5: "15:45",
   6: "17:30",
   7: "19:15",
-  20: "",
+  20: " ",
 };
 const frame = {
   FIRST: 1,
@@ -54,12 +61,11 @@ const weekType = {
   FOURTH: "Четвертая",
 };
 const subGroup = {
-  0: "Первая",
-  1: "Вторая",
-  2: "Все",
-  3: "Третья",
-  4: "Четвертая",
-  5: "Неизвестно",
+  FIRST: "Первая",
+  SECOND: "Вторая",
+  ALL: "Все",
+  THIRD: "Третья",
+  FOURTH: "Четвертая",
 };
 const lessonType = {
   PRACTICE: "Практическая",
@@ -92,6 +98,21 @@ const mainReducer = (state = initialState, action) => {
       return {
         ...state,
         discipline: [...action.discipline],
+      };
+    case SET_TEACHER:
+      return {
+        ...state,
+        teacher: [...action.teacher],
+      };
+    case SET_GROUP:
+      return {
+        ...state,
+        group: [...action.group],
+      };
+    case EDIT_TIMETABLE:
+      return {
+        ...state,
+        timetable: action.timetable,
       };
     default:
       return state;
