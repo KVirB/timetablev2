@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Select from "react-select-virtualized";
 import Modal from "react-modal";
 import { lessonHours, leessonOfType, subGroup, weekType } from "./ConstantMain";
@@ -23,16 +23,16 @@ const ModalMain = (props) => {
         contentLabel="Main Modal"
         overlayClassName={"modal_open"}
       >
-        <div class="modal-menu-main">
+        <div className="modal-menu-main">
           {console.log(props.rooms)}
-          <div class="modal-container">
-            <label class="modal-label">Корпус:</label>
-            <span class="modal-span">
+          <div className="modal-container">
+            <label className="modal-label">Корпус:</label>
+            <span className="modal-span">
               {props.dataRow && props.dataRow.frameTable}
             </span>
           </div>
-          <div class="modal-container">
-            <label class="modal-label">
+          <div className="modal-container">
+            <label className="modal-label">
               Аудитория: {props.dataRow && props.dataRow.roomNumber}
             </label>
             <Select
@@ -56,15 +56,15 @@ const ModalMain = (props) => {
               )}
             />
           </div>
-          <div class="modal-container">
-            <label class="modal-label">День недели:</label>
-            <span class="modal-span">
+          <div className="modal-container">
+            <label className="modal-label">День недели:</label>
+            <span className="modal-span">
               {props.dataRow && props.dataRow.dayTable}
             </span>
           </div>
-          <div class="modal-container data-containers">
-            <div class="data-div">
-              <label class="modal-label">Дата С:</label>
+          <div className="modal-container data-containers">
+            <div className="data-div">
+              <label className="modal-label">Дата С:</label>
               <input
                 className="data"
                 type="date"
@@ -75,8 +75,8 @@ const ModalMain = (props) => {
                 }}
               ></input>
             </div>
-            <div class="data-div">
-              <label class="modal-label">Дата По:</label>
+            <div className="data-div">
+              <label className="modal-label">Дата По:</label>
               <input
                 type="date"
                 className="data"

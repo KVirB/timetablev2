@@ -80,20 +80,22 @@ const lessonType = {
 const mainReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_TIMETABLE:
-      const updatedTimetable = action.timetable
-        .map((event) => ({
-          ...event,
-          dayTable: weekdays[event.day],
-          lessonNumberTable: lessonHours[event.lessonNumber],
-          frameTable: frame[event.frame],
-          roomNumberTable: event.roomNumber + " " + roomType[event.roomType],
-          weekTypeTable: weekType[event.weekType],
-          subGroupTable: subGroup[event.subGroup],
-          lessonTypeTable: lessonType[event.lessonType],
-        }))
-        .sort((a, b) => {
-          return a.frameTable - b.frameTable;
-        });
+      const updatedTimetable =
+        action.timetable &&
+        action.timetable
+          .map((event) => ({
+            ...event,
+            dayTable: weekdays[event.day],
+            lessonNumberTable: lessonHours[event.lessonNumber],
+            frameTable: frame[event.frame],
+            roomNumberTable: event.roomNumber + " " + roomType[event.roomType],
+            weekTypeTable: weekType[event.weekType],
+            subGroupTable: subGroup[event.subGroup],
+            lessonTypeTable: lessonType[event.lessonType],
+          }))
+          .sort((a, b) => {
+            return a.frameTable - b.frameTable;
+          });
       return {
         ...state,
         timetable: updatedTimetable,

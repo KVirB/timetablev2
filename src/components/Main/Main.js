@@ -142,6 +142,7 @@ const Main = (props) => {
     }
   }, [filterText, gridApi]);
   useEffect(() => {
+    props.getTimetableThunk();
     props.getFacultiesThunk();
   }, []);
   const defaultColDef = useMemo(() => {
@@ -173,14 +174,13 @@ const Main = (props) => {
   }, [getRowStyle, defaultColDef]);
   const onGridReady = useCallback(
     (params) => {
-      if (props.timetable.length === 0) {
-        props.getTimetableThunk();
-        props.getDisciplineThunk();
-        props.getTeacherThunk();
-        props.getGroupThunk();
-        props.getRoomsThunk();
-        setGridApi(params.api);
-      }
+      // if (props.timetable.length === 0) {
+      props.getDisciplineThunk();
+      props.getTeacherThunk();
+      props.getGroupThunk();
+      props.getRoomsThunk();
+      setGridApi(params.api);
+      // }
     },
     [props]
   );
@@ -199,135 +199,144 @@ const Main = (props) => {
     setIsOpen(false);
     setDataRow();
   };
-  return (
-    <>
-      <ModalMain
-        modalIsOpen={modalIsOpen}
-        openModal={openModal}
-        closeModal={closeModal}
-        dataRow={dataRow}
-        discipline={props.discipline}
-        teacher={props.teacher}
-        group={props.group}
-        typeOfLesson={props.typeOfLesson}
-        updateTimetableThunk={props.updateTimetableThunk}
-        timetable={props.timetable}
-        editTimetableThunk={props.editTimetableThunk}
-        maxId={maxId}
-        setDataRow={setDataRow}
-        rooms={props.rooms}
-      ></ModalMain>
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-        gutter={8}
-        containerClassName=""
-        containerStyle={{ marginTop: "100px" }}
-        toastOptions={{
-          className: "",
-          duration: 5000,
-          style: {
-            background: "#434c63",
-            color: "#fff",
-          },
-          success: {
-            duration: 3000,
-            theme: {
-              primary: "green",
-              secondary: "black",
+  if (props.timetable && props.timetable.length !== 0) {
+    return (
+      <>
+        <ModalMain
+          modalIsOpen={modalIsOpen}
+          openModal={openModal}
+          closeModal={closeModal}
+          dataRow={dataRow}
+          discipline={props.discipline}
+          teacher={props.teacher}
+          group={props.group}
+          typeOfLesson={props.typeOfLesson}
+          updateTimetableThunk={props.updateTimetableThunk}
+          timetable={props.timetable}
+          editTimetableThunk={props.editTimetableThunk}
+          maxId={maxId}
+          setDataRow={setDataRow}
+          rooms={props.rooms}
+        ></ModalMain>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          gutter={8}
+          containerClassName=""
+          containerStyle={{ marginTop: "100px" }}
+          toastOptions={{
+            className: "",
+            duration: 5000,
+            style: {
+              background: "#434c63",
+              color: "#fff",
             },
-          },
-        }}
-      />
-      <div className="controls-container">
-        <div className="controls-container-inputs">
-          <input
-            className="control-input-search"
-            type="text"
-            value={filterText}
-            onChange={handleFilterChange}
-            placeholder="Поиск"
-          />
+            success: {
+              duration: 3000,
+              theme: {
+                primary: "green",
+                secondary: "black",
+              },
+            },
+          }}
+        />
+        <div className="controls-container">
+          <div className="controls-container-inputs">
+            <input
+              className="control-input-search"
+              type="text"
+              value={filterText}
+              onChange={handleFilterChange}
+              placeholder="Поиск"
+            />
+          </div>
+          <div className="controls-container-inputs">
+            <Select
+              className="control-select"
+              placeholder="Выберите факультет"
+              onChange={(e) => {
+                if (e !== null) {
+                  setFaculty(e.label);
+                  setFacultyId(e.value);
+                }
+              }}
+              defaultValue={{ value: "faculty", label: "Факультет" }}
+              options={props.faculty.map((item) => ({
+                value: item.id,
+                label: item.name,
+              }))}
+              formatOptionLabel={({ label }) => (
+                <div className="fast-option-custom" title={label}>
+                  {label}
+                </div>
+              )}
+            />
+            <Select
+              className="control-select"
+              placeholder="Выберите курс"
+              onChange={(e) => {
+                if (e !== null) {
+                  setCourse(e.value);
+                }
+              }}
+              defaultValue={{ value: "course", label: "Курс" }}
+              options={courses.map((item) => ({
+                value: item,
+                label: item.toString(),
+              }))}
+              formatOptionLabel={({ label }) => (
+                <div className="fast-option-custom" title={label}>
+                  {label}
+                </div>
+              )}
+            />
+            <button
+              className="control-button"
+              onClick={getExcelScheduleThunk(facultyId, course, faculty)}
+            >
+              Excel
+            </button>
+          </div>
+          <div className="controls-button">
+            <button
+              className="control-button"
+              onClick={() => {
+                props.deleteScheduleRowThunk(dataRow.id);
+              }}
+            >
+              Delete
+            </button>
+          </div>
         </div>
-        <div className="controls-container-inputs">
-          <Select
-            className="control-select"
-            placeholder="Выберите факультет"
-            onChange={(e) => {
-              if (e !== null) {
-                setFaculty(e.label);
-                setFacultyId(e.value);
-              }
-            }}
-            defaultValue={{ value: "faculty", label: "Факультет" }}
-            options={props.faculty.map((item) => ({
-              value: item.id,
-              label: item.name,
-            }))}
-            formatOptionLabel={({ label }) => (
-              <div className="fast-option-custom" title={label}>
-                {label}
-              </div>
-            )}
-          />
-          <Select
-            className="control-select"
-            placeholder="Выберите курс"
-            onChange={(e) => {
-              if (e !== null) {
-                setCourse(e.value);
-              }
-            }}
-            defaultValue={{ value: "course", label: "Курс" }}
-            options={courses.map((item) => ({
-              value: item,
-              label: item.toString(),
-            }))}
-            formatOptionLabel={({ label }) => (
-              <div className="fast-option-custom" title={label}>
-                {label}
-              </div>
-            )}
-          />
-          <button
-            className="control-button"
-            onClick={getExcelScheduleThunk(facultyId, course, faculty)}
-          >
-            Excel
-          </button>
+        <div
+          className="ag-theme-alpine"
+          style={{
+            height: "calc(100vh - 158px)",
+            width: "100vw",
+            margin: "auto",
+          }}
+        >
+          <AgGridReact
+            rowData={props.timetable}
+            columnDefs={columnDefs}
+            gridOptions={gridOptions}
+            onGridReady={onGridReady}
+            onRowClicked={handleRowClicked}
+            onRowDoubleClicked={dataRow && openModal}
+            suppressHorizontalScroll={true}
+          ></AgGridReact>
         </div>
-        <div className="controls-button">
-          <button
-            className="control-button"
-            onClick={() => {
-              props.deleteScheduleRowThunk(dataRow.id);
-            }}
-          >
-            Delete
-          </button>
-        </div>
+      </>
+    );
+  } else {
+    return (
+      <div class="loader">
+        <div class="inner one"></div>
+        <div class="inner two"></div>
+        <div class="inner three"></div>
       </div>
-      <div
-        className="ag-theme-alpine"
-        style={{
-          height: "calc(100vh - 158px)",
-          width: "100vw",
-          margin: "auto",
-        }}
-      >
-        {console.log(props.timetable)}
-        <AgGridReact
-          rowData={props.timetable}
-          columnDefs={columnDefs}
-          gridOptions={gridOptions}
-          onGridReady={onGridReady}
-          onRowClicked={handleRowClicked}
-          onRowDoubleClicked={dataRow && openModal}
-          suppressHorizontalScroll={true}
-        ></AgGridReact>
-      </div>
-    </>
-  );
+    );
+  }
 };
 const mapStateToProps = (state) => {
   return {
