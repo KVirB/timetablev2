@@ -1,13 +1,14 @@
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const defaultOptionsPatent = {
-  baseURL: "http://192.168.11.57:18088/",
+  baseURL: "http://192.168.11.252:18088/",
   headers: {
     "Content-Type": "application/json",
   },
 };
 const defaultOptionsPatentDean = {
-  baseURL: "http://192.168.11.57:18076/",
+  baseURL: "http://192.168.11.252:18076/",
   headers: {
     "Content-Type": "application/json",
   },
@@ -82,6 +83,69 @@ export const getGroup = () => {
 export const updateTimetable = (dataRow) => {
   return baseRoutPatent
     .put(`/api/rooms/put`, dataRow)
+    .then((response) => {
+      toast.success("Успешно сохранено");
+      return response.data;
+    })
+    .catch((error) => {
+      unAuthorized(error);
+      toast.error(error.response.data);
+    });
+};
+
+export const getFaculties = () => {
+  return baseRoutPatentDean
+    .get(`/api/faculties/active?is=true`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      unAuthorized(error);
+    });
+};
+
+export const getExcelSchedule = (facultyId, course, faculty) => {
+  toast.loading("Формирование Excel...");
+  return baseRoutPatent
+    .request({
+      url: `/api/rooms/getExcel?facultyId=${facultyId}&course=${course}`,
+      method: "GET",
+      responseType: "blob",
+    })
+    .then(({ data }) => {
+      const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement("a");
+      let fileName = `Отчёт по группе ${faculty}`;
+      link.href = downloadUrl;
+      link.setAttribute("download", fileName + ".xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.dismiss();
+      toast.success("Excel успешно сформирован");
+    })
+    .catch((error) => {
+      toast.dismiss();
+      toast.error(error.response.data);
+    });
+};
+
+export const deleteScheduleRow = (id) => {
+  return baseRoutPatent
+    .delete(`api/rooms/delete?id=${id}`)
+    .then((response) => {
+      toast.success("Успешно удалено");
+      return response.data;
+    })
+    .catch((error) => {
+      unAuthorized(error);
+      toast.error(error.repsonse.data);
+    });
+};
+
+export const getRooms = () => {
+  return baseRoutPatentDean
+    .get(`/api/classes/`)
     .then((response) => {
       return response.data;
     })

@@ -12,12 +12,13 @@
 ::-webkit-scrollbar-thumb {
   background: #495471;
   border-radius: 10px;
+  margin-right: 20px;
 }
 /* ====================================================== */
 /* =======================MainHeader===================== */
 .main_header {
   height: 100px;
-  background: var(--Main, #434c63);
+  background: #434c63;
   display: flex;
   justify-content: space-between;
   padding: 0 58px;
@@ -83,6 +84,31 @@
   background: rgba(26, 30, 46, 0.5);
   z-index: 3;
 }
+.data-containers {
+  display: flex;
+  flex-direction: row;
+}
+.data-div {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  gap: 10px;
+}
+.data {
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid hsl(0, 0%, 80%);
+  height: 34px;
+  text-indent: 5px;
+}
+.data:hover {
+  border-color: hsl(0, 0%, 70%);
+}
+.data:focus-visible {
+  outline: none;
+  border-color: #2684ff;
+  box-shadow: 0 0 0 1px #2684ff;
+}
 /* ====================================================== */
 .custom-select {
   width: 200px;
@@ -108,4 +134,12 @@
 
 .ag-row:hover .ag-icon {
   color: white !important;
+}
+.ag-theme-alpine .ag-row-selected {
+  background-color: #434c63 !important;
+  background: #434c63 !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }

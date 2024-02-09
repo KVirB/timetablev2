@@ -4,6 +4,8 @@ import {
   SET_TEACHER,
   SET_GROUP,
   EDIT_TIMETABLE,
+  SET_FACULTIES,
+  SET_ROOMS,
 } from "../types/mainTypes";
 
 let initialState = {
@@ -11,6 +13,8 @@ let initialState = {
   discipline: [],
   teacher: [],
   group: [],
+  faculty: [],
+  rooms: [],
 };
 const weekdays = {
   0: "Понедельник",
@@ -32,10 +36,10 @@ const lessonHours = {
   20: " ",
 };
 const frame = {
-  FIRST: 1,
-  SECOND: 2,
-  FOURTH: 4,
-  FIFTH: 5,
+  FIRST: "1Корпус",
+  SECOND: "2Корпус",
+  FOURTH: "4Корпус",
+  FIFTH: "5Корпус",
   UNKNOWN: "Неизвестно",
 };
 const roomType = {
@@ -113,6 +117,24 @@ const mainReducer = (state = initialState, action) => {
       return {
         ...state,
         timetable: action.timetable,
+      };
+    case SET_FACULTIES:
+      return {
+        ...state,
+        faculty: [...action.faculty],
+      };
+    case SET_ROOMS:
+      const updatedRooms = action.rooms
+        .map((event) => ({
+          ...event,
+          frame: frame[event.frame],
+        }))
+        .sort((a, b) => {
+          return a.frame - b.frame;
+        });
+      return {
+        ...state,
+        rooms: updatedRooms,
       };
     default:
       return state;

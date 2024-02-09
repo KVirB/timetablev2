@@ -11,10 +11,36 @@ import {
   getGroupThunk,
   updateTimetableThunk,
   editTimetableThunk,
+  getFacultiesThunk,
+  getExcelScheduleThunk,
+  deleteScheduleRowThunk,
+  getRoomsThunk,
 } from "../../redux/actions/mainThunks";
 import { connect } from "react-redux";
 import ModalMain from "./ModalMain";
+import Select from "react-select-virtualized";
+import { Toaster } from "react-hot-toast";
 
+const frameComparator = (valueA, valueB) => {
+  const frame = ["1Корпус", "2Корпус", "4Корпус", "5Корпус", "Неизвестно"];
+  const indexA = frame.indexOf(valueA);
+  const indexB = frame.indexOf(valueB);
+  return indexA - indexB;
+};
+const weekComparator = (valueA, valueB) => {
+  const week = [
+    "Первая",
+    "Вторая",
+    "Третья",
+    "Четвертая",
+    "Числитель",
+    "Знаменатель",
+    "Всегда",
+  ];
+  const indexA = week.indexOf(valueA);
+  const indexB = week.indexOf(valueB);
+  return indexA - indexB;
+};
 const dayComparator = (valueA, valueB) => {
   const daysOfWeek = [
     "Понедельник",
@@ -49,6 +75,7 @@ const timeComparator = (valueA, valueB) => {
 
   return indexA - indexB;
 };
+const courses = [1, 2, 3, 4, 5];
 
 const Main = (props) => {
   const [columnDefs] = useState([
@@ -57,6 +84,8 @@ const Main = (props) => {
       rowGroup: true,
       hide: true,
       headerName: "Корпус",
+      comparator: frameComparator,
+      sort: "asc",
     },
     {
       field: "roomNumberTable",
@@ -75,19 +104,35 @@ const Main = (props) => {
       field: "lessonNumberTable",
       headerName: "Время",
       comparator: timeComparator,
-      defaultSort: "asc",
+      sort: "asc",
     },
     { field: "disciplineName", headerName: "Дисциплина" },
     { field: "lessonTypeTable", headerName: "Тип" },
     { field: "teacherFullName", headerName: "Преподаватель" },
     { field: "group", headerName: "Группа" },
     { field: "subGroupTable", headerName: "Подгруппа" },
-    { field: "weekTypeTable", headerName: "Неделя" },
+    {
+      field: "weekTypeTable",
+      headerName: "Неделя",
+      comparator: weekComparator,
+      sort: "asc",
+    },
+    {
+      field: "startDate",
+      headerName: "С",
+    },
+    {
+      field: "endDate",
+      headerName: "По",
+    },
   ]);
   const [dataRow, setDataRow] = useState();
   const [maxId, setMaxId] = useState();
   const [gridApi, setGridApi] = useState(null);
   const [filterText, setFilterText] = useState("");
+  const [faculty, setFaculty] = useState("");
+  const [course, setCourse] = useState("");
+  const [facultyId, setFacultyId] = useState("");
   const handleFilterChange = useCallback((e) => {
     setFilterText(e.target.value);
   }, []);
@@ -96,6 +141,9 @@ const Main = (props) => {
       gridApi.setQuickFilter(filterText);
     }
   }, [filterText, gridApi]);
+  useEffect(() => {
+    props.getFacultiesThunk();
+  }, []);
   const defaultColDef = useMemo(() => {
     return {
       flex: 1,
@@ -125,11 +173,14 @@ const Main = (props) => {
   }, [getRowStyle, defaultColDef]);
   const onGridReady = useCallback(
     (params) => {
-      props.getTimetableThunk();
-      props.getDisciplineThunk();
-      props.getTeacherThunk();
-      props.getGroupThunk();
-      setGridApi(params.api);
+      if (props.timetable.length === 0) {
+        props.getTimetableThunk();
+        props.getDisciplineThunk();
+        props.getTeacherThunk();
+        props.getGroupThunk();
+        props.getRoomsThunk();
+        setGridApi(params.api);
+      }
     },
     [props]
   );
@@ -146,10 +197,10 @@ const Main = (props) => {
   };
   const closeModal = () => {
     setIsOpen(false);
+    setDataRow();
   };
   return (
     <>
-      {console.log(props.timetable, "store")}
       <ModalMain
         modalIsOpen={modalIsOpen}
         openModal={openModal}
@@ -164,28 +215,107 @@ const Main = (props) => {
         editTimetableThunk={props.editTimetableThunk}
         maxId={maxId}
         setDataRow={setDataRow}
+        rooms={props.rooms}
       ></ModalMain>
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
+        gutter={8}
+        containerClassName=""
+        containerStyle={{ marginTop: "100px" }}
+        toastOptions={{
+          className: "",
+          duration: 5000,
+          style: {
+            background: "#434c63",
+            color: "#fff",
+          },
+          success: {
+            duration: 3000,
+            theme: {
+              primary: "green",
+              secondary: "black",
+            },
+          },
+        }}
+      />
+      <div className="controls-container">
+        <div className="controls-container-inputs">
+          <input
+            className="control-input-search"
+            type="text"
+            value={filterText}
+            onChange={handleFilterChange}
+            placeholder="Поиск"
+          />
+        </div>
+        <div className="controls-container-inputs">
+          <Select
+            className="control-select"
+            placeholder="Выберите факультет"
+            onChange={(e) => {
+              if (e !== null) {
+                setFaculty(e.label);
+                setFacultyId(e.value);
+              }
+            }}
+            defaultValue={{ value: "faculty", label: "Факультет" }}
+            options={props.faculty.map((item) => ({
+              value: item.id,
+              label: item.name,
+            }))}
+            formatOptionLabel={({ label }) => (
+              <div className="fast-option-custom" title={label}>
+                {label}
+              </div>
+            )}
+          />
+          <Select
+            className="control-select"
+            placeholder="Выберите курс"
+            onChange={(e) => {
+              if (e !== null) {
+                setCourse(e.value);
+              }
+            }}
+            defaultValue={{ value: "course", label: "Курс" }}
+            options={courses.map((item) => ({
+              value: item,
+              label: item.toString(),
+            }))}
+            formatOptionLabel={({ label }) => (
+              <div className="fast-option-custom" title={label}>
+                {label}
+              </div>
+            )}
+          />
+          <button
+            className="control-button"
+            onClick={getExcelScheduleThunk(facultyId, course, faculty)}
+          >
+            Excel
+          </button>
+        </div>
+        <div className="controls-button">
+          <button
+            className="control-button"
+            onClick={() => {
+              props.deleteScheduleRowThunk(dataRow.id);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
       <div
         className="ag-theme-alpine"
         style={{
-          height: "calc(100vh - 150px)",
+          height: "calc(100vh - 158px)",
           width: "100vw",
           margin: "auto",
         }}
       >
-        <input
-          type="text"
-          value={filterText}
-          onChange={handleFilterChange}
-          placeholder="Поиск"
-        />
-        <button
-          onClick={() => {
-            props.getTimetableThunk();
-          }}
-        >
-          bimba
-        </button>
+        {console.log(props.timetable)}
         <AgGridReact
           rowData={props.timetable}
           columnDefs={columnDefs}
@@ -206,6 +336,8 @@ const mapStateToProps = (state) => {
     teacher: state.mainPage.teacher,
     group: state.mainPage.group,
     typeOfLesson: state.mainPage.typeOfLesson,
+    faculty: state.mainPage.faculty,
+    rooms: state.mainPage.rooms,
   };
 };
 const mapDispatchToProps = {
@@ -215,5 +347,9 @@ const mapDispatchToProps = {
   getGroupThunk,
   updateTimetableThunk,
   editTimetableThunk,
+  getFacultiesThunk,
+  getExcelScheduleThunk,
+  deleteScheduleRowThunk,
+  getRoomsThunk,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

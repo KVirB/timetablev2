@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import Select from "react-select-virtualized";
 import Modal from "react-modal";
 import { lessonHours, leessonOfType, subGroup, weekType } from "./ConstantMain";
+import { toast } from "react-hot-toast";
 
 const ModalMain = (props) => {
   const [addDataRow, setAddDataRow] = useState({});
@@ -13,145 +14,247 @@ const ModalMain = (props) => {
     });
   }, [props.dataRow, props.maxId]);
   return (
-    <div>
-      {console.log(addDataRow)}
-      {console.log(props.dataRow)}
+    <>
       <Modal
         ariaHideApp={false}
+        className={"modal-window"}
         isOpen={props.modalIsOpen}
         onRequestClose={props.closeModal}
         contentLabel="Main Modal"
         overlayClassName={"modal_open"}
       >
-        <div>
-          <label style={{ display: "block" }}>Корпус</label>
-          <span>{props.dataRow && props.dataRow.frameTable}</span>
+        <div class="modal-menu-main">
+          {console.log(props.rooms)}
+          <div class="modal-container">
+            <label class="modal-label">Корпус:</label>
+            <span class="modal-span">
+              {props.dataRow && props.dataRow.frameTable}
+            </span>
+          </div>
+          <div class="modal-container">
+            <label class="modal-label">
+              Аудитория: {props.dataRow && props.dataRow.roomNumber}
+            </label>
+            <Select
+              className=""
+              placeholder="Выберите аудиторию"
+              onChange={(e) => {
+                if (e !== null) {
+                  addDataRow.roomId = e.value;
+                  addDataRow.roomNumber = e.label;
+                }
+              }}
+              defaultValue={{ value: "room", label: "Аудитория" }}
+              options={props.rooms.map((room) => ({
+                value: room.id,
+                label: `${room.frame} ${room.roomNumber}`,
+              }))}
+              formatOptionLabel={({ label }) => (
+                <div className="fast-option-custom" title={label}>
+                  {label}
+                </div>
+              )}
+            />
+          </div>
+          <div class="modal-container">
+            <label class="modal-label">День недели:</label>
+            <span class="modal-span">
+              {props.dataRow && props.dataRow.dayTable}
+            </span>
+          </div>
+          <div class="modal-container data-containers">
+            <div class="data-div">
+              <label class="modal-label">Дата С:</label>
+              <input
+                className="data"
+                type="date"
+                name="startDate"
+                onChange={(e) => {
+                  addDataRow.startDate = e.target.value;
+                  console.log(addDataRow);
+                }}
+              ></input>
+            </div>
+            <div class="data-div">
+              <label class="modal-label">Дата По:</label>
+              <input
+                type="date"
+                className="data"
+                name="endDate"
+                onChange={(e) => {
+                  addDataRow.endDate = e.target.value;
+                  console.log(addDataRow);
+                }}
+              ></input>
+            </div>
+          </div>
+          <Select
+            className=""
+            placeholder="Выберите время"
+            onChange={(e) => {
+              if (e !== null) {
+                addDataRow.lessonNumber = e.value;
+                addDataRow.lessonNumberTable = e.label;
+              }
+            }}
+            defaultValue={{ value: "time", label: "Время" }}
+            options={lessonHours}
+            formatOptionLabel={({ label }) => (
+              <div className="fast-option-custom" title={label}>
+                {label}
+              </div>
+            )}
+          />
+          <Select
+            className=""
+            placeholder="Выберите дисциплину"
+            onChange={(e) => {
+              if (e !== null) {
+                addDataRow.disciplineName = e.label.substring(
+                  0,
+                  e.label.indexOf(" (")
+                );
+                addDataRow.disciplineId = e.value;
+              }
+            }}
+            defaultValue={{ value: "discipline", label: "Дисциплина" }}
+            options={props.discipline.map((m) => ({
+              value: m.id,
+              label:
+                m.name +
+                " (" +
+                (m.department !== null
+                  ? m.department.shortName + " Наше"
+                  : "Нет кафедры") +
+                ")",
+            }))}
+            formatOptionLabel={({ label }) => (
+              <div className="fast-option-custom" title={label}>
+                {label}
+              </div>
+            )}
+          />
+          <Select
+            className=""
+            placeholder="Выберите тип занятия"
+            onChange={(e) => {
+              if (e !== null) {
+                addDataRow.lessonType = e.value;
+                addDataRow.lessonTypeTable = e.label;
+              }
+            }}
+            defaultValue={{ value: "typeOfLesson", label: "Тип занятия" }}
+            options={leessonOfType}
+            formatOptionLabel={({ label }) => (
+              <div className="fast-option-custom" title={label}>
+                {label}
+              </div>
+            )}
+          />
+          <Select
+            className=""
+            placeholder="Выберите преподавателя"
+            onChange={(e) => {
+              if (e !== null) {
+                addDataRow.teacherFullName = e.label;
+                addDataRow.teacherId = e.value;
+              }
+            }}
+            defaultValue={{ value: "teacher", label: "Преподаватель" }}
+            options={props.teacher.map((m) => ({
+              value: m.id,
+              label: m.fullName,
+            }))}
+            formatOptionLabel={({ label }) => (
+              <div className="fast-option-custom" title={label}>
+                {label}
+              </div>
+            )}
+          />
+          <Select
+            className=""
+            placeholder="Выберите группу"
+            onChange={(e) => {
+              if (e !== null) {
+                addDataRow.group = e.label;
+                addDataRow.groupId = e.value;
+              }
+            }}
+            defaultValue={{ value: "group", label: "Группа" }}
+            options={props.group.map((m) => ({
+              value: m.id,
+              label: m.name,
+            }))}
+            formatOptionLabel={({ label }) => (
+              <div className="fast-option-custom" title={label}>
+                {label}
+              </div>
+            )}
+          />
+          <Select
+            className=""
+            placeholder="Выберите подгруппу"
+            onChange={(e) => {
+              if (e !== null) {
+                addDataRow.subGroup = e.value;
+                addDataRow.subGroupTable = e.label;
+              }
+            }}
+            defaultValue={{ value: "subGroup", label: "Подгруппа" }}
+            options={subGroup}
+            formatOptionLabel={({ label }) => (
+              <div className="fast-option-custom" title={label}>
+                {label}
+              </div>
+            )}
+          />
+          <Select
+            className=""
+            placeholder="Выберите неделю"
+            onChange={(e) => {
+              if (e !== null) {
+                addDataRow.weekType = e.value;
+                addDataRow.weekTypeTable = e.label;
+              }
+            }}
+            defaultValue={{ value: "week", label: "Неделя" }}
+            options={weekType}
+            formatOptionLabel={({ label }) => (
+              <div className="fast-option-custom" title={label}>
+                {label}
+              </div>
+            )}
+          />
+          {/* Yamaxilla Больше не делай на один запрос 2 метода <3 */}
+          <button
+            onClick={() => {
+              let index = props.timetable.findIndex(
+                (obj) => obj.lessonId === addDataRow.lessonId
+              );
+              if (index !== -1) {
+                addDataRow.id = props.dataRow.lessonId;
+                props.timetable[index] = addDataRow;
+                // props.editTimetableThunk(props.timetable);
+              }
+              props.updateTimetableThunk(addDataRow);
+            }}
+          >
+            Редактировать
+          </button>
+          <button
+            onClick={() => {
+              const newTimetable = props.timetable;
+              newTimetable.unshift(addDataRow);
+              props.editTimetableThunk(newTimetable);
+              props.updateTimetableThunk(addDataRow);
+            }}
+          >
+            Добавить
+          </button>
+          <button onClick={props.closeModal}>Закрыть</button>
         </div>
-        <div>
-          <label style={{ display: "block" }}>Аудитория</label>
-          <span>{props.dataRow && props.dataRow.roomNumberTable}</span>
-        </div>
-        <div>
-          <label style={{ display: "block" }}>День недели</label>
-          <span>{props.dataRow && props.dataRow.dayTable}</span>
-        </div>
-        <Select
-          className=""
-          isClearable
-          onChange={(e) => {
-            addDataRow.lessonNumber = e.value;
-            addDataRow.lessonNumberTable = e.label;
-          }}
-          defaultValue={{ value: "time", label: "Время" }}
-          options={lessonHours}
-        />
-        <Select
-          className=""
-          isClearable
-          onChange={(e) => {
-            addDataRow.disciplineName = e.label.substring(
-              0,
-              e.label.indexOf(" (")
-            );
-            addDataRow.disciplineId = e.value;
-          }}
-          defaultValue={{ value: "discipline", label: "Дисциплина" }}
-          options={props.discipline.map((m) => ({
-            value: m.id,
-            label:
-              m.name +
-              " (" +
-              (m.department !== null
-                ? m.department.shortName + " Наше"
-                : "Нет кафедры") +
-              ")",
-          }))}
-        />
-        <Select
-          className=""
-          isClearable
-          onChange={(e) => {
-            addDataRow.lessonType = e.value;
-            addDataRow.lessonTypeTable = e.label;
-          }}
-          defaultValue={{ value: "typeOfLesson", label: "Тип занятия" }}
-          options={leessonOfType}
-        />
-        <Select
-          className=""
-          isClearable
-          onChange={(e) => {
-            addDataRow.teacherFullName = e.label;
-            addDataRow.teacherId = e.value;
-          }}
-          defaultValue={{ value: "teacher", label: "Преподаватель" }}
-          options={props.teacher.map((m) => ({
-            value: m.id,
-            label: m.fullName,
-          }))}
-        />
-        <Select
-          className=""
-          isClearable
-          onChange={(e) => {
-            addDataRow.group = e.label;
-            addDataRow.groupId = e.value;
-          }}
-          defaultValue={{ value: "group", label: "Группа" }}
-          options={props.group.map((m) => ({
-            value: m.id,
-            label: m.name,
-          }))}
-        />
-        <Select
-          className=""
-          isClearable
-          onChange={(e) => {
-            addDataRow.subGroup = e.value;
-            addDataRow.subGroupTable = e.label;
-          }}
-          defaultValue={{ value: "subGroup", label: "Подгруппа" }}
-          options={subGroup}
-        />
-        <Select
-          className=""
-          isClearable
-          onChange={(e) => {
-            addDataRow.weekType = e.value;
-            addDataRow.weekTypeTable = e.label;
-          }}
-          defaultValue={{ value: "week", label: "Неделя" }}
-          options={weekType}
-        />
-        {/* Yamaxilla Больше не делай на один запрос 2 метода <3 */}
-        <button
-          onClick={() => {
-            let index = props.timetable.findIndex(
-              (obj) => obj.lessonId === addDataRow.lessonId
-            );
-            if (index !== -1) {
-              addDataRow.id = props.dataRow.lessonId;
-              props.timetable[index] = addDataRow;
-              props.editTimetableThunk(props.timetable);
-            }
-            props.updateTimetableThunk(addDataRow);
-          }}
-        >
-          Редактировать
-        </button>
-        <button
-          onClick={() => {
-            const newTimetable = props.timetable;
-            newTimetable.unshift(addDataRow);
-            props.editTimetableThunk(newTimetable);
-            props.updateTimetableThunk(addDataRow);
-          }}
-        >
-          Добавить
-        </button>
-        <button onClick={props.closeModal}>close</button>
       </Modal>
-    </div>
+    </>
   );
 };
 

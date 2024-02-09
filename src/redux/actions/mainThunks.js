@@ -4,13 +4,18 @@ import {
   getTeacher,
   getGroup,
   updateTimetable,
+  getFaculties,
+  getExcelSchedule,
+  deleteScheduleRow,
+  getRooms,
 } from "../../api/api";
 import {
   setTimetable,
   setDiscipline,
   setTeacher,
   setGroup,
-  editTimetable,
+  setFaculties,
+  setRooms,
 } from "./mainActions";
 
 export const getTimetableThunk = () => {
@@ -46,13 +51,43 @@ export const getGroupThunk = () => {
 };
 
 export const updateTimetableThunk = (dataRow) => {
-  return (dispatch) => {
-    updateTimetable(dataRow);
+  return async (dispatch) => {
+    await updateTimetable(dataRow);
+    dispatch(getTimetableThunk());
   };
 };
 
 export const editTimetableThunk = (dataRow) => {
   return (dispatch) => {
     dispatch(setTimetable(dataRow));
+  };
+};
+
+export const getFacultiesThunk = () => {
+  return (dispatch) => {
+    getFaculties().then((data) => {
+      dispatch(setFaculties(data));
+    });
+  };
+};
+
+export const getExcelScheduleThunk = (facultyId, course, faculty) => {
+  return (dispatch) => {
+    getExcelSchedule(facultyId, course, faculty);
+  };
+};
+
+export const deleteScheduleRowThunk = (id) => {
+  return async (dispatch) => {
+    await deleteScheduleRow(id);
+    dispatch(getTimetableThunk());
+  };
+};
+
+export const getRoomsThunk = () => {
+  return (dispatch) => {
+    getRooms().then((data) => {
+      dispatch(setRooms(data));
+    });
   };
 };

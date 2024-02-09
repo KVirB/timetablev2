@@ -4,6 +4,8 @@ import {
   SET_TEACHER,
   SET_GROUP,
   EDIT_TIMETABLE,
+  SET_FACULTIES,
+  SET_ROOMS,
 } from "../types/mainTypes";
 
 export const setTimetable = (timetable) => ({
@@ -29,4 +31,13 @@ export const setGroup = (group) => ({
 export const editTimetable = (dataRow) => ({
   type: EDIT_TIMETABLE,
   dataRow: dataRow,
+});
+
+export const setFaculties = (faculty) => ({
+  type: SET_FACULTIES,
+  faculty: faculty,
+});
+export const setRooms = (rooms) => ({
+  type: SET_ROOMS,
+  rooms: rooms,
 });

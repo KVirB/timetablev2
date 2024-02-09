@@ -23,11 +23,11 @@ export const subGroup = [
 ];
 
 export const weekType = [
+  { label: "Всегда", value: "ALWAYS" },
+  { label: "Числитель", value: "NUMERATOR" },
+  { label: "Знаменатель", value: "DENOMINATOR" },
   { label: "1", value: "FIRST" },
   { label: "2", value: "SECOND" },
   { label: "3", value: "THIRD" },
   { label: "4", value: "FOURTH" },
-  { label: "Числитель", value: "NUMERATOR" },
-  { label: "Знаменатель", value: "DENOMINATOR" },
-  { label: "Всегда", value: "ALWAYS" },
 ];

@@ -7,7 +7,6 @@ const http = axios.create({
 });
 
 http.interceptors.response.use((response) => response.data);
-
 export function getToken(data) {
   return http.post("/token?grant_type=password", data);
 }
