@@ -115,7 +115,7 @@ export const getExcelSchedule = (facultyId, course, faculty) => {
     .then(({ data }) => {
       const downloadUrl = window.URL.createObjectURL(new Blob([data]));
       const link = document.createElement("a");
-      let fileName = `Расписание факультета ${faculty}`;
+      let fileName = `Расписание факультета ${faculty}, ${course} курс`;
       link.href = downloadUrl;
       link.setAttribute("download", fileName + ".xlsx");
       document.body.appendChild(link);

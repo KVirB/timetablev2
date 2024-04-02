@@ -27,14 +27,9 @@ function Login(props) {
         stateRole = stateRole + role.includes(el);
       });
       signIn(JSON.parse(localStorage.getItem("user")), () =>
-        stateRole === 0
-          ? navigate(
-              location.state ? location.state?.from : `/teacher_profile`,
-              { replace: true }
-            )
-          : navigate(location.state ? location.state?.from : `/main`, {
-              replace: true,
-            })
+        navigate(location.state ? location.state?.from : `/main`, {
+          replace: true,
+        })
       );
     }
   }, [location, navigate, signIn]);

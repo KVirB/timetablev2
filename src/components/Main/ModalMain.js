@@ -1,7 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import Select from "react-select-virtualized";
 import Modal from "react-modal";
-import { lessonHours, leessonOfType, subGroup, weekType } from "./ConstantMain";
+import {
+  lessonHours,
+  leessonOfType,
+  subGroup,
+  weekType,
+  weekdays,
+} from "./ConstantMain";
 import { toast } from "react-hot-toast";
 
 const ModalMain = (props) => {
@@ -45,10 +51,24 @@ const ModalMain = (props) => {
                 }
               }}
               defaultValue={{ value: "room", label: "Аудитория" }}
-              options={props.rooms.map((room) => ({
-                value: room.id,
-                label: `${room.frame} ${room.roomNumber}`,
-              }))}
+              options={props.rooms
+                .map((room) => ({
+                  value: room.id,
+                  label: `${room.frame} ${room.roomNumber}`,
+                }))
+                .sort((a, b) => {
+                  const aRoomNumber = parseFloat(a.label.split(" ")[1]);
+                  const bRoomNumber = parseFloat(b.label.split(" ")[1]);
+                  if (isNaN(aRoomNumber) && isNaN(bRoomNumber)) {
+                    return a.label.localeCompare(b.label);
+                  } else if (isNaN(aRoomNumber)) {
+                    return 1;
+                  } else if (isNaN(bRoomNumber)) {
+                    return -1;
+                  } else {
+                    return aRoomNumber - bRoomNumber;
+                  }
+                })}
               formatOptionLabel={({ label }) => (
                 <div className="fast-option-custom" title={label}>
                   {label}
@@ -58,9 +78,25 @@ const ModalMain = (props) => {
           </div>
           <div className="modal-container">
             <label className="modal-label">День недели:</label>
-            <span className="modal-span">
+            {/* <span className="modal-span">
               {props.dataRow && props.dataRow.dayTable}
-            </span>
+            </span> */}
+            <Select
+              className=""
+              placeholder="День недели"
+              onChange={(e) => {
+                if (e !== null) {
+                  addDataRow.day = e.value;
+                }
+              }}
+              defaultValue={{ value: "day", label: "День" }}
+              options={weekdays}
+              formatOptionLabel={({ label }) => (
+                <div className="fast-option-custom" title={label}>
+                  {label}
+                </div>
+              )}
+            />
           </div>
           <div className="modal-container data-containers">
             <div className="data-div">

@@ -12,6 +12,10 @@ export const leessonOfType = [
   { label: "Лекция", value: "LECTURE" },
   { label: "Практика", value: "PRACTICE" },
   { label: "Лабораторная", value: "LAB" },
+  { label: "Экзамен", value: "EXAM" },
+  { label: "Консультация", value: "CONSULTATION" },
+  { label: "Зачёт", value: "SCORE" },
+  { label: "Защита курсовой работы/проекта", value: "DEFENSE" },
 ];
 
 export const subGroup = [
@@ -30,4 +34,14 @@ export const weekType = [
   { label: "2", value: "SECOND" },
   { label: "3", value: "THIRD" },
   { label: "4", value: "FOURTH" },
+];
+
+export const weekdays = [
+  { label: "Понедельник", value: 0 },
+  { label: "Вторник", value: 1 },
+  { label: "Среда", value: 2 },
+  { label: "Четверг", value: 3 },
+  { label: "Пятница", value: 4 },
+  { label: "Суббота", value: 5 },
+  { label: "Воскресенье", value: 6 },
 ];

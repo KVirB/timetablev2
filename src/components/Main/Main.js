@@ -20,6 +20,7 @@ import { connect } from "react-redux";
 import ModalMain from "./ModalMain";
 import Select from "react-select-virtualized";
 import { Toaster } from "react-hot-toast";
+import { GroupInstanceIdCreator } from "ag-grid-enterprise";
 
 const frameComparator = (valueA, valueB) => {
   const frame = ["1Корпус", "2Корпус", "4Корпус", "5Корпус", "Неизвестно"];
@@ -170,6 +171,21 @@ const Main = (props) => {
       groupDisplayType: "multipleColumns",
       animateRows: true,
       rowSelection: "single",
+      autoGroupColumnDef: {
+        cellRendererParams: {
+          suppressCount: true,
+          innerRenderer: (params) => {
+            console.log(params);
+            if (params.node.rowGroupIndex === 2) {
+              return `(${params.node.childrenAfterFilter.length - 1}) ${
+                params.node.key
+              }`;
+            } else {
+              return params.node.key;
+            }
+          },
+        },
+      },
     };
   }, [getRowStyle, defaultColDef]);
   const onGridReady = useCallback(

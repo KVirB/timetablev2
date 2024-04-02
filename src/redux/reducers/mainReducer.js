@@ -75,6 +75,10 @@ const lessonType = {
   PRACTICE: "Практическая",
   LAB: "Лабораторная",
   LECTURE: "Лекция",
+  EXAM: "Экзамен",
+  CONSULTATION: "Консультация",
+  SCORE: "Зачёт",
+  DEFENSE: "Защита курсовой работы/проекта",
   UNKNOWN: "Неизвестно",
 };
 const mainReducer = (state = initialState, action) => {
