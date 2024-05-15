@@ -134,9 +134,21 @@ const Main = (props) => {
   const [faculty, setFaculty] = useState("");
   const [course, setCourse] = useState("");
   const [facultyId, setFacultyId] = useState("");
+  const [rowData, setRowData] = useState("");
+
   const handleFilterChange = useCallback((e) => {
     setFilterText(e.target.value);
   }, []);
+
+  const handleDateChange = (e) => {
+    localStorage.setItem("date", e.target.value);
+    let date = new Date(e.target.value);
+    let newRowData = props.timetable.filter((item) => {
+      return new Date(item.startDate) >= date || item.startDate === null;
+    });
+    setRowData(newRowData);
+  };
+
   useEffect(() => {
     if (gridApi) {
       gridApi.setQuickFilter(filterText);
@@ -175,7 +187,6 @@ const Main = (props) => {
         cellRendererParams: {
           suppressCount: true,
           innerRenderer: (params) => {
-            console.log(params);
             if (params.node.rowGroupIndex === 2) {
               return `(${params.node.childrenAfterFilter.length - 1}) ${
                 params.node.key
@@ -190,13 +201,23 @@ const Main = (props) => {
   }, [getRowStyle, defaultColDef]);
   const onGridReady = useCallback(
     (params) => {
-      // if (props.timetable.length === 0) {
       props.getDisciplineThunk();
       props.getTeacherThunk();
       props.getGroupThunk();
       props.getRoomsThunk();
       setGridApi(params.api);
-      // }
+
+      if (localStorage.getItem("date")) {
+        let newRowData = props.timetable.filter((item) => {
+          return (
+            new Date(item.startDate) >=
+              new Date(localStorage.getItem("date")) || item.startDate === null
+          );
+        });
+        setRowData(newRowData);
+      } else {
+        setRowData(props.timetable);
+      }
     },
     [props]
   );
@@ -265,6 +286,11 @@ const Main = (props) => {
               onChange={handleFilterChange}
               placeholder="Поиск"
             />
+            <input
+              type="date"
+              value={localStorage.getItem("date")}
+              onChange={handleDateChange}
+            ></input>
           </div>
           <div className="controls-container-inputs">
             <Select
@@ -333,7 +359,7 @@ const Main = (props) => {
           }}
         >
           <AgGridReact
-            rowData={props.timetable}
+            rowData={rowData}
             columnDefs={columnDefs}
             gridOptions={gridOptions}
             onGridReady={onGridReady}
