@@ -105,9 +105,10 @@ const ModalMain = (props) => {
                 className="data"
                 type="date"
                 name="startDate"
+                defaultValue={localStorage.getItem("dateFrom")}
                 onChange={(e) => {
                   addDataRow.startDate = e.target.value;
-                  console.log(addDataRow);
+                  localStorage.setItem("dateFrom", e.target.value);
                 }}
               ></input>
             </div>
@@ -117,9 +118,10 @@ const ModalMain = (props) => {
                 type="date"
                 className="data"
                 name="endDate"
+                defaultValue={localStorage.getItem("dateTo")}
                 onChange={(e) => {
                   addDataRow.endDate = e.target.value;
-                  console.log(addDataRow);
+                  localStorage.setItem("dateTo", e.target.value);
                 }}
               ></input>
             </div>
@@ -280,6 +282,12 @@ const ModalMain = (props) => {
           <button
             onClick={() => {
               const newTimetable = props.timetable;
+              if (localStorage.getItem("dateFrom")) {
+                addDataRow.startDate = localStorage.getItem("dateFrom");
+              }
+              if (localStorage.getItem("dateTo")) {
+                addDataRow.endDate = localStorage.getItem("dateTo");
+              }
               newTimetable.unshift(addDataRow);
               props.editTimetableThunk(newTimetable);
               props.updateTimetableThunk(addDataRow);

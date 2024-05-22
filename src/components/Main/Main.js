@@ -148,7 +148,19 @@ const Main = (props) => {
     });
     setRowData(newRowData);
   };
-
+  useEffect(() => {
+    if (localStorage.getItem("date")) {
+      let newRowData = props.timetable.filter((item) => {
+        return (
+          new Date(item.startDate) >= new Date(localStorage.getItem("date")) ||
+          item.startDate === null
+        );
+      });
+      setRowData(newRowData);
+    } else {
+      setRowData(props.timetable);
+    }
+  }, [props.timetable]);
   useEffect(() => {
     if (gridApi) {
       gridApi.setQuickFilter(filterText);
@@ -206,18 +218,6 @@ const Main = (props) => {
       props.getGroupThunk();
       props.getRoomsThunk();
       setGridApi(params.api);
-
-      if (localStorage.getItem("date")) {
-        let newRowData = props.timetable.filter((item) => {
-          return (
-            new Date(item.startDate) >=
-              new Date(localStorage.getItem("date")) || item.startDate === null
-          );
-        });
-        setRowData(newRowData);
-      } else {
-        setRowData(props.timetable);
-      }
     },
     [props]
   );
@@ -240,6 +240,7 @@ const Main = (props) => {
     return (
       <>
         <ModalMain
+          setRowData={setRowData}
           modalIsOpen={modalIsOpen}
           openModal={openModal}
           closeModal={closeModal}
@@ -288,6 +289,7 @@ const Main = (props) => {
             />
             <input
               type="date"
+              className="semester-date"
               value={localStorage.getItem("date")}
               onChange={handleDateChange}
             ></input>
