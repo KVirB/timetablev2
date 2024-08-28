@@ -47,7 +47,7 @@ code {
 }
 .modal-menu-main {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   flex-direction: column;
 }
 .fast-option-custom {
@@ -58,12 +58,11 @@ code {
 .controls-container {
   display: flex;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 8px 20px;
 }
 .controls-container-inputs {
   display: flex;
   gap: 40px;
-  padding: 10px 0;
 }
 .control-input-search {
   background-color: hsl(0, 0%, 100%);
@@ -106,7 +105,8 @@ code {
   gap: 40px;
 }
 .control-select {
-  width: 200px;
+  width: 100%;
+  max-width: 250px;
 }
 .semester-date {
   background-color: hsl(0, 0%, 100%);
@@ -114,4 +114,106 @@ code {
   border-radius: 4px;
   border-style: solid;
   border-width: 1px;
+  height: 38px;
+}
+.check-label {
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+}
+.block-edit-add {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.block-check-close {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+}
+.btn-add,
+.btn-update {
+  border-radius: 7px;
+  background: #434c63;
+  height: 38px;
+  color: #fff;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  padding: 0 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.5s;
+}
+.btn-add:hover,
+.btn-update:hover,
+.btn-close:hover {
+  background: #353f57;
+  box-shadow: 0px 0px 20px 0px #232c41 inset;
+  transition: 0.5s;
+}
+.btn-close {
+  border-radius: 7px;
+  border: 1px solid #ebebeb;
+  height: 38px;
+  width: 38px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: 0.5s;
+}
+.svg-block {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cross {
+  stroke: #434c63;
+  transition: 0.5s;
+}
+.btn-close:hover .cross {
+  stroke: #ffffff;
+  transition: 0.5s;
+}
+.full-time-div {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 250px;
+  width: 100%;
+}
+.correspondence-time-div {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 250px;
+  width: 100%;
+}
+.excels-div {
+  display: flex;
+  justify-content: space-evenly;
+}
+.vertical-line {
+  border-right: 2px #ebebeb solid;
+}
+.excel-dates {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.excel-div {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.excelTitle {
+  color: #c4c4c4;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
 }

@@ -15,12 +15,13 @@ import {
   getExcelScheduleThunk,
   deleteScheduleRowThunk,
   getRoomsThunk,
+  getExcelScheduleZfThunk,
 } from "../../redux/actions/mainThunks";
 import { connect } from "react-redux";
 import ModalMain from "./ModalMain";
 import Select from "react-select-virtualized";
 import { Toaster } from "react-hot-toast";
-import { GroupInstanceIdCreator } from "ag-grid-enterprise";
+import ExcelModal from "./ExcelModal";
 
 const frameComparator = (valueA, valueB) => {
   const frame = ["1Корпус", "2Корпус", "4Корпус", "5Корпус", "Неизвестно"];
@@ -76,7 +77,6 @@ const timeComparator = (valueA, valueB) => {
 
   return indexA - indexB;
 };
-const courses = [1, 2, 3, 4, 5];
 
 const Main = (props) => {
   const [columnDefs] = useState([
@@ -106,6 +106,7 @@ const Main = (props) => {
       headerName: "Время",
       comparator: timeComparator,
       sort: "asc",
+      columnGroupShow: "open",
     },
     { field: "disciplineName", headerName: "Дисциплина" },
     { field: "lessonTypeTable", headerName: "Тип" },
@@ -127,18 +128,19 @@ const Main = (props) => {
       headerName: "По",
     },
   ]);
+
   const [dataRow, setDataRow] = useState();
   const [maxId, setMaxId] = useState();
   const [gridApi, setGridApi] = useState(null);
   const [filterText, setFilterText] = useState("");
-  const [faculty, setFaculty] = useState("");
-  const [course, setCourse] = useState("");
-  const [facultyId, setFacultyId] = useState("");
   const [rowData, setRowData] = useState("");
 
-  const handleFilterChange = useCallback((e) => {
+  const onInputChange = (e) => {
     setFilterText(e.target.value);
-  }, []);
+    if (gridApi) {
+      gridApi.setQuickFilter(e.target.value);
+    }
+  };
 
   const handleDateChange = (e) => {
     localStorage.setItem("date", e.target.value);
@@ -162,11 +164,6 @@ const Main = (props) => {
     }
   }, [props.timetable]);
   useEffect(() => {
-    if (gridApi) {
-      gridApi.setQuickFilter(filterText);
-    }
-  }, [filterText, gridApi]);
-  useEffect(() => {
     props.getTimetableThunk();
     props.getFacultiesThunk();
   }, []);
@@ -178,6 +175,11 @@ const Main = (props) => {
       sortable: true,
       sortingOrder: ["asc", "desc"],
       resizable: true,
+      getQuickFilterText: (params) => {
+        return params.colDef.field === "roomNumberTable"
+          ? params.value.replace(/\s+.*/, "")
+          : "";
+      },
     };
   }, []);
   const getRowStyle = useCallback((params) => {
@@ -192,6 +194,11 @@ const Main = (props) => {
       getRowStyle: getRowStyle,
       groupDefaultExpanded: 2,
       defaultColDef: defaultColDef,
+      quickFilterMatcher: (quickFilterParts, rowQuickFilterAggregateText) => {
+        return quickFilterParts.every(
+          (part) => rowQuickFilterAggregateText === part
+        );
+      },
       groupDisplayType: "multipleColumns",
       animateRows: true,
       rowSelection: "single",
@@ -236,6 +243,15 @@ const Main = (props) => {
     setIsOpen(false);
     setDataRow();
   };
+
+  const [ExcelModalIsOpen, setExcelIsOpen] = useState(false);
+  const ExcelOpenModal = () => {
+    setExcelIsOpen(true);
+  };
+  const ExcelCloseModal = () => {
+    setExcelIsOpen(false);
+  };
+
   if (props.timetable && props.timetable.length !== 0) {
     return (
       <>
@@ -256,6 +272,15 @@ const Main = (props) => {
           setDataRow={setDataRow}
           rooms={props.rooms}
         ></ModalMain>
+        <ExcelModal
+          ExcelModalIsOpen={ExcelModalIsOpen}
+          ExcelOpenModal={ExcelOpenModal}
+          ExcelCloseModal={ExcelCloseModal}
+          getExcelScheduleThunk={getExcelScheduleThunk}
+          getExcelScheduleZfThunk={getExcelScheduleZfThunk}
+          faculty={props.faculty}
+          group={props.group}
+        ></ExcelModal>
         <Toaster
           position="top-center"
           reverseOrder={false}
@@ -284,8 +309,8 @@ const Main = (props) => {
               className="control-input-search"
               type="text"
               value={filterText}
-              onChange={handleFilterChange}
-              placeholder="Поиск"
+              placeholder="Аудитория..."
+              onChange={onInputChange}
             />
             <input
               type="date"
@@ -294,61 +319,27 @@ const Main = (props) => {
               onChange={handleDateChange}
             ></input>
           </div>
-          <div className="controls-container-inputs">
-            <Select
-              className="control-select"
-              placeholder="Выберите факультет"
-              onChange={(e) => {
-                if (e !== null) {
-                  setFaculty(e.label);
-                  setFacultyId(e.value);
-                }
-              }}
-              defaultValue={{ value: "faculty", label: "Факультет" }}
-              options={props.faculty.map((item) => ({
-                value: item.id,
-                label: item.name,
-              }))}
-              formatOptionLabel={({ label }) => (
-                <div className="fast-option-custom" title={label}>
-                  {label}
-                </div>
-              )}
-            />
-            <Select
-              className="control-select"
-              placeholder="Выберите курс"
-              onChange={(e) => {
-                if (e !== null) {
-                  setCourse(e.value);
-                }
-              }}
-              defaultValue={{ value: "course", label: "Курс" }}
-              options={courses.map((item) => ({
-                value: item,
-                label: item.toString(),
-              }))}
-              formatOptionLabel={({ label }) => (
-                <div className="fast-option-custom" title={label}>
-                  {label}
-                </div>
-              )}
-            />
+          <div className="controls-button">
             <button
               className="control-button"
-              onClick={getExcelScheduleThunk(facultyId, course, faculty)}
+              // onClick={getExcelScheduleThunk(
+              //   facultyId,
+              //   course,
+              //   faculty,
+              //   dateFromExcel,
+              //   dateToExcel
+              // )}
+              onClick={ExcelOpenModal}
             >
               Excel
             </button>
-          </div>
-          <div className="controls-button">
             <button
               className="control-button"
               onClick={() => {
                 props.deleteScheduleRowThunk(dataRow.id);
               }}
             >
-              Delete
+              Удалить
             </button>
           </div>
         </div>
@@ -404,5 +395,6 @@ const mapDispatchToProps = {
   getExcelScheduleThunk,
   deleteScheduleRowThunk,
   getRoomsThunk,
+  getExcelScheduleZfThunk,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

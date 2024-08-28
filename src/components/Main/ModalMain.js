@@ -9,9 +9,10 @@ import {
   weekdays,
 } from "./ConstantMain";
 import { toast } from "react-hot-toast";
-
+import sprite from "../../images/cross.svg";
 const ModalMain = (props) => {
   const [addDataRow, setAddDataRow] = useState({});
+  const [check, setCheck] = useState(true);
   useEffect(() => {
     setAddDataRow({
       ...props.dataRow,
@@ -19,6 +20,9 @@ const ModalMain = (props) => {
       lessonId: props.maxId + 1,
     });
   }, [props.dataRow, props.maxId]);
+  const customFilter = ({ label }, input) => {
+    return label.toLowerCase().startsWith(input.toLowerCase());
+  };
   return (
     <>
       <Modal
@@ -41,6 +45,7 @@ const ModalMain = (props) => {
             <label className="modal-label">
               Аудитория: {props.dataRow && props.dataRow.roomNumber}
             </label>
+            {console.log(props.rooms)}
             <Select
               className=""
               placeholder="Выберите аудиторию"
@@ -146,6 +151,7 @@ const ModalMain = (props) => {
           <Select
             className=""
             placeholder="Выберите дисциплину"
+            filterOption={customFilter}
             onChange={(e) => {
               if (e !== null) {
                 addDataRow.disciplineName = e.label.substring(
@@ -245,6 +251,7 @@ const ModalMain = (props) => {
                 {label}
               </div>
             )}
+            menuPlacement="top"
           />
           <Select
             className=""
@@ -262,40 +269,67 @@ const ModalMain = (props) => {
                 {label}
               </div>
             )}
+            menuPlacement="top"
           />
           {/* Yamaxilla Больше не делай на один запрос 2 метода <3 */}
-          <button
-            onClick={() => {
-              let index = props.timetable.findIndex(
-                (obj) => obj.lessonId === addDataRow.lessonId
-              );
-              if (index !== -1) {
-                addDataRow.id = props.dataRow.lessonId;
-                props.timetable[index] = addDataRow;
-                // props.editTimetableThunk(props.timetable);
-              }
-              props.updateTimetableThunk(addDataRow);
-            }}
-          >
-            Редактировать
-          </button>
-          <button
-            onClick={() => {
-              const newTimetable = props.timetable;
-              if (localStorage.getItem("dateFrom")) {
-                addDataRow.startDate = localStorage.getItem("dateFrom");
-              }
-              if (localStorage.getItem("dateTo")) {
-                addDataRow.endDate = localStorage.getItem("dateTo");
-              }
-              newTimetable.unshift(addDataRow);
-              props.editTimetableThunk(newTimetable);
-              props.updateTimetableThunk(addDataRow);
-            }}
-          >
-            Добавить
-          </button>
-          <button onClick={props.closeModal}>Закрыть</button>
+          <div className="block-edit-add">
+            {props.dataRow && props.dataRow.id !== null ? (
+              <button
+                className="btn-add"
+                onClick={() => {
+                  let index = props.timetable.findIndex(
+                    (obj) => obj.lessonId === addDataRow.lessonId
+                  );
+                  if (index !== -1) {
+                    addDataRow.id = props.dataRow.lessonId;
+                    props.timetable[index] = addDataRow;
+                    // props.editTimetableThunk(props.timetable);
+                  }
+                  props.updateTimetableThunk(addDataRow, check);
+                }}
+              >
+                Редактировать
+              </button>
+            ) : (
+              <button
+                className="btn-update"
+                onClick={() => {
+                  const newTimetable = props.timetable;
+                  if (localStorage.getItem("dateFrom")) {
+                    addDataRow.startDate = localStorage.getItem("dateFrom");
+                  }
+                  if (localStorage.getItem("dateTo")) {
+                    addDataRow.endDate = localStorage.getItem("dateTo");
+                  }
+                  newTimetable.unshift(addDataRow);
+                  props.editTimetableThunk(newTimetable);
+                  props.updateTimetableThunk(addDataRow, check);
+                }}
+              >
+                Добавить
+              </button>
+            )}
+          </div>
+          <div className="block-check-close">
+            <div
+              style={{ display: "flex", gap: "20px", justifyContent: "center" }}
+            >
+              <label className="check-label">Включить проверки</label>
+              <input
+                type="checkbox"
+                style={{ height: "20px", width: "20px" }}
+                checked={check}
+                onChange={(e) => setCheck(e.target.checked)}
+              ></input>
+            </div>
+            <button className="btn-close" onClick={props.closeModal}>
+              <div className="svg-block">
+                <svg className="cross" width={20} height={20} fill="#fff">
+                  <use xlinkHref={`${sprite}#cross`} />
+                </svg>
+              </div>
+            </button>
+          </div>
         </div>
       </Modal>
     </>

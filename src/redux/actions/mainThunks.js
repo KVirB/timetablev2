@@ -8,6 +8,7 @@ import {
   getExcelSchedule,
   deleteScheduleRow,
   getRooms,
+  getExcelScheduleZf,
 } from "../../api/api";
 import {
   setTimetable,
@@ -50,9 +51,9 @@ export const getGroupThunk = () => {
   };
 };
 
-export const updateTimetableThunk = (dataRow) => {
+export const updateTimetableThunk = (dataRow, check) => {
   return async (dispatch) => {
-    await updateTimetable(dataRow);
+    await updateTimetable(dataRow, check);
     dispatch(getTimetableThunk());
   };
 };
@@ -71,9 +72,33 @@ export const getFacultiesThunk = () => {
   };
 };
 
-export const getExcelScheduleThunk = (facultyId, course, faculty) => {
+export const getExcelScheduleThunk = (
+  facultyId,
+  course,
+  faculty,
+  dateFromExcel,
+  dateToExcel
+) => {
   return (dispatch) => {
-    getExcelSchedule(facultyId, course, faculty);
+    getExcelSchedule(facultyId, course, faculty, dateFromExcel, dateToExcel);
+  };
+};
+
+export const getExcelScheduleZfThunk = (
+  groupsIds,
+  sessionType,
+  dateFromExcel,
+  dateToExcel,
+  groupsNames
+) => {
+  return (dispatch) => {
+    getExcelScheduleZf(
+      groupsIds,
+      sessionType,
+      dateFromExcel,
+      dateToExcel,
+      groupsNames
+    );
   };
 };
 

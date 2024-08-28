@@ -68,8 +68,9 @@ const subGroup = {
   FIRST: "Первая",
   SECOND: "Вторая",
   ALL: "Все",
-  THIRD: "Третья",
-  FOURTH: "Четвертая",
+  SEWING: "Швейники",
+  SHOE: "Обувщики",
+  TEXTILE: "Текстильщики",
 };
 const lessonType = {
   PRACTICE: "Практическая",
@@ -79,6 +80,7 @@ const lessonType = {
   CONSULTATION: "Консультация",
   SCORE: "Зачёт",
   DEFENSE: "Защита курсовой работы/проекта",
+  EXAM_REVIEW: "Экзаменационный просмотр",
   UNKNOWN: "Неизвестно",
 };
 const mainReducer = (state = initialState, action) => {

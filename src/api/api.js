@@ -80,9 +80,9 @@ export const getGroup = () => {
     });
 };
 
-export const updateTimetable = (dataRow) => {
+export const updateTimetable = (dataRow, check) => {
   return baseRoutPatent
-    .put(`/api/rooms/put`, dataRow)
+    .put(`/api/rooms/put/?check=${check}`, dataRow)
     .then((response) => {
       toast.success("Успешно сохранено");
       return response.data;
@@ -104,11 +104,17 @@ export const getFaculties = () => {
     });
 };
 
-export const getExcelSchedule = (facultyId, course, faculty) => {
+export const getExcelSchedule = (
+  facultyId,
+  course,
+  faculty,
+  dateFromExcel,
+  dateToExcel
+) => {
   toast.loading("Формирование Excel...");
   return baseRoutPatent
     .request({
-      url: `/api/rooms/getExcel?facultyId=${facultyId}&course=${course}`,
+      url: `/api/rooms/getExcel?facultyId=${facultyId}&course=${course}&date1=${dateFromExcel}&date2=${dateToExcel}`,
       method: "GET",
       responseType: "blob",
     })
@@ -116,6 +122,38 @@ export const getExcelSchedule = (facultyId, course, faculty) => {
       const downloadUrl = window.URL.createObjectURL(new Blob([data]));
       const link = document.createElement("a");
       let fileName = `Расписание факультета ${faculty}, ${course} курс`;
+      link.href = downloadUrl;
+      link.setAttribute("download", fileName + ".xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.dismiss();
+      toast.success("Excel успешно сформирован");
+    })
+    .catch((error) => {
+      toast.dismiss();
+      toast.error(error.response.data);
+    });
+};
+
+export const getExcelScheduleZf = (
+  groupsIds,
+  sessionType,
+  dateFromExcel,
+  dateToExcel,
+  groupsNames
+) => {
+  toast.loading("Формирование Excel...");
+  return baseRoutPatent
+    .request({
+      url: `api/rooms/zaochnoeExcel?groupsIds=${groupsIds}&from=${dateFromExcel}&to=${dateToExcel}&sessionType=${sessionType}`,
+      method: "GET",
+      responseType: "blob",
+    })
+    .then(({ data }) => {
+      const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement("a");
+      let fileName = `Расписание групп ${groupsNames}`;
       link.href = downloadUrl;
       link.setAttribute("download", fileName + ".xlsx");
       document.body.appendChild(link);

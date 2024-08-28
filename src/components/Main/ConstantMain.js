@@ -16,14 +16,21 @@ export const leessonOfType = [
   { label: "Консультация", value: "CONSULTATION" },
   { label: "Зачёт", value: "SCORE" },
   { label: "Защита курсовой работы/проекта", value: "DEFENSE" },
+  { label: "Экзаменационный просмотр", value: "EXAM_REVIEW" },
+  { label: "Консультация. Экзамен", value: "CONSULT_EXAM" },
 ];
 
 export const subGroup = [
   { value: "FIRST", label: "1" },
   { value: "SECOND", label: "2" },
-  { value: "THIRD", label: "3" },
-  { value: "FOURTH", label: "4" },
+  // { value: "THIRD", label: "3" },
+  // { value: "FOURTH", label: "4" },
   { value: "ALL", label: "Все" },
+  { value: "SEWING", label: "Швейники" },
+  { value: "SHOE", label: "Обувщики" },
+  { value: "TEXTILE", label: "Текстильщики" },
+  { value: "WEAVERS", label: "Ткачи" },
+  { value: "KNITWEAR", label: "Трикотажники" },
 ];
 
 export const weekType = [
