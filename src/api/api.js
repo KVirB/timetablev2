@@ -80,11 +80,35 @@ export const getGroup = () => {
     });
 };
 
+export const getHiddenGroups = () => {
+  return baseRoutPatent
+    .get(`/api/rooms/hiddenGroups`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      unAuthorized(error);
+    });
+};
+
 export const updateTimetable = (dataRow, check) => {
   return baseRoutPatent
     .put(`/api/rooms/put/?check=${check}`, dataRow)
     .then((response) => {
       toast.success("Успешно сохранено");
+      return response.data;
+    })
+    .catch((error) => {
+      unAuthorized(error);
+      toast.error(error.response.data);
+    });
+};
+
+export const hideGroup = (groupId, hide) => {
+  return baseRoutPatent
+    .post(`/api/rooms/visibility?groupId=${groupId}&visible=${hide}`)
+    .then((response) => {
+      toast.success(!hide ? "Успешно скрыто" : "Успешно открыто");
       return response.data;
     })
     .catch((error) => {
@@ -146,7 +170,7 @@ export const getExcelScheduleZf = (
   toast.loading("Формирование Excel...");
   return baseRoutPatent
     .request({
-      url: `api/rooms/zaochnoeExcel?groupsIds=${groupsIds}&from=${dateFromExcel}&to=${dateToExcel}&sessionType=${sessionType}`,
+      url: `api/rooms/zaochnoeExcel?groupsIds=${groupsIds}&from=${dateFromExcel}&to=${dateToExcel}&sessionType=${sessionType.toLowerCase()}`,
       method: "GET",
       responseType: "blob",
     })
@@ -154,6 +178,32 @@ export const getExcelScheduleZf = (
       const downloadUrl = window.URL.createObjectURL(new Blob([data]));
       const link = document.createElement("a");
       let fileName = `Расписание групп ${groupsNames}`;
+      link.href = downloadUrl;
+      link.setAttribute("download", fileName + ".xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.dismiss();
+      toast.success("Excel успешно сформирован");
+    })
+    .catch((error) => {
+      toast.dismiss();
+      toast.error(error.response.data);
+    });
+};
+
+export const getSchedule = (teachersIds, dateFromExcel, dateToExcel) => {
+  toast.loading("Формирование Excel...");
+  return baseRoutPatent
+    .request({
+      url: `api/rooms/teacherExcel?teacherIds=${teachersIds}&date1=${dateFromExcel}&date2=${dateToExcel}`,
+      method: "GET",
+      responseType: "blob",
+    })
+    .then(({ data }) => {
+      const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement("a");
+      let fileName = `Расписание преподавателей`;
       link.href = downloadUrl;
       link.setAttribute("download", fileName + ".xlsx");
       document.body.appendChild(link);

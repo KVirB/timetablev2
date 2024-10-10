@@ -8,16 +8,20 @@ export const lessonHours = [
   { label: "19:15", value: 7 },
 ];
 
-export const leessonOfType = [
+export const lessonOfType = [
   { label: "Лекция", value: "LECTURE" },
   { label: "Практика", value: "PRACTICE" },
   { label: "Лабораторная", value: "LAB" },
+  { label: "Семинар", value: "SEMINAR" },
   { label: "Экзамен", value: "EXAM" },
   { label: "Консультация", value: "CONSULTATION" },
   { label: "Зачёт", value: "SCORE" },
-  { label: "Защита курсовой работы/проекта", value: "DEFENSE" },
+  { label: "Защита курсовой работы", value: "COURSE_WORK_DEFENSE" },
+  { label: "Защита курсового проекта", value: "COURSE_PROJECT_DEFENSE" },
   { label: "Экзаменационный просмотр", value: "EXAM_REVIEW" },
+  { label: "Диф. зачёт", value: "DIFF_SCORE" },
   { label: "Консультация. Экзамен", value: "CONSULT_EXAM" },
+  { label: "Защита отчёта по практике", value: "PRACTICE_DEFENSE" },
 ];
 
 export const subGroup = [

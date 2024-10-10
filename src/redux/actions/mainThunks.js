@@ -9,6 +9,9 @@ import {
   deleteScheduleRow,
   getRooms,
   getExcelScheduleZf,
+  hideGroup,
+  getHiddenGroups,
+  getSchedule,
 } from "../../api/api";
 import {
   setTimetable,
@@ -17,6 +20,7 @@ import {
   setGroup,
   setFaculties,
   setRooms,
+  setHiddenGroups,
 } from "./mainActions";
 
 export const getTimetableThunk = () => {
@@ -51,10 +55,24 @@ export const getGroupThunk = () => {
   };
 };
 
+export const getHiddenGroupsThunk = () => {
+  return (dispatch) => {
+    getHiddenGroups().then((data) => {
+      dispatch(setHiddenGroups(data));
+    });
+  };
+};
+
 export const updateTimetableThunk = (dataRow, check) => {
   return async (dispatch) => {
     await updateTimetable(dataRow, check);
     dispatch(getTimetableThunk());
+  };
+};
+
+export const HideGroupThunk = (groupId, hide) => {
+  return (dispatch) => {
+    hideGroup(groupId, hide);
   };
 };
 
@@ -99,6 +117,12 @@ export const getExcelScheduleZfThunk = (
       dateToExcel,
       groupsNames
     );
+  };
+};
+
+export const getScheduleThunk = (teachersIds, dateFromExcel, dateToExcel) => {
+  return () => {
+    getSchedule(teachersIds, dateFromExcel, dateToExcel);
   };
 };
 

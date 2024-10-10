@@ -95,7 +95,7 @@ code {
   border: none;
   cursor: pointer;
 }
-.control-button:hover {
+.control-button:not([disabled]):hover {
   background: #353f57;
   box-shadow: 0px 0px 20px 0px #232c41 inset;
 }
@@ -216,4 +216,73 @@ code {
   font-size: 20px;
   display: flex;
   justify-content: center;
+}
+.hide-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.hide-group-div {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+.control-button:disabled {
+  background-color: #ebebeb;
+  color: darkgray;
+}
+.all-hide-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 200px;
+  border: 2px solid #ebebeb;
+  border-radius: 10px;
+  overflow-x: auto;
+  padding: 10px;
+}
+.hide-group-item {
+  font-size: 20px;
+  border-bottom: 1px solid #ebebeb;
+}
+.hidden-groups {
+  color: hsl(0, 0%, 50%);
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.modal-div-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.2s all linear;
+  opacity: 0;
+}
+
+.modal-label-error {
+  color: #ff8484;
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19px;
+  display: flex;
+}
+
+.modal-container-div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.opacity1 {
+  opacity: 1;
+}
+
+.green-border {
+  border-color: rgb(3, 255, 3) !important;
+  /* color: green; */
+}
+.unset-border {
+  border-color: unset !important;
 }

@@ -1,18 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import Select from "react-select-virtualized";
+import SelectOld from "react-select";
 import Modal from "react-modal";
 import {
   lessonHours,
-  leessonOfType,
+  lessonOfType,
   subGroup,
   weekType,
   weekdays,
 } from "./ConstantMain";
-import { toast } from "react-hot-toast";
 import sprite from "../../images/cross.svg";
+import { ReactComponent as ErrorIcon } from "../../images/error-icon.svg";
+
 const ModalMain = (props) => {
   const [addDataRow, setAddDataRow] = useState({});
   const [check, setCheck] = useState(true);
+  const [error, setError] = useState(false);
   useEffect(() => {
     setAddDataRow({
       ...props.dataRow,
@@ -23,6 +26,8 @@ const ModalMain = (props) => {
   const customFilter = ({ label }, input) => {
     return label.toLowerCase().startsWith(input.toLowerCase());
   };
+  let date = new Date(localStorage.getItem("dateFrom"));
+
   return (
     <>
       <Modal
@@ -82,7 +87,21 @@ const ModalMain = (props) => {
             />
           </div>
           <div className="modal-container">
-            <label className="modal-label">День недели:</label>
+            <div className="modal-container-div">
+              <label className="modal-label">
+                День недели: {props.dataRow && props.dataRow.dayTable}
+              </label>
+              <div
+                className={
+                  error ? "modal-div-error opacity1" : "modal-div-error"
+                }
+              >
+                <ErrorIcon />
+                <label className="modal-label-error">
+                  День недели не совпадает с датой!
+                </label>
+              </div>
+            </div>
             {/* <span className="modal-span">
               {props.dataRow && props.dataRow.dayTable}
             </span> */}
@@ -178,7 +197,8 @@ const ModalMain = (props) => {
               </div>
             )}
           />
-          <Select
+
+          <SelectOld
             className=""
             placeholder="Выберите тип занятия"
             onChange={(e) => {
@@ -188,7 +208,7 @@ const ModalMain = (props) => {
               }
             }}
             defaultValue={{ value: "typeOfLesson", label: "Тип занятия" }}
-            options={leessonOfType}
+            options={lessonOfType}
             formatOptionLabel={({ label }) => (
               <div className="fast-option-custom" title={label}>
                 {label}
@@ -283,7 +303,6 @@ const ModalMain = (props) => {
                   if (index !== -1) {
                     addDataRow.id = props.dataRow.lessonId;
                     props.timetable[index] = addDataRow;
-                    // props.editTimetableThunk(props.timetable);
                   }
                   props.updateTimetableThunk(addDataRow, check);
                 }}
@@ -301,9 +320,17 @@ const ModalMain = (props) => {
                   if (localStorage.getItem("dateTo")) {
                     addDataRow.endDate = localStorage.getItem("dateTo");
                   }
-                  newTimetable.unshift(addDataRow);
-                  props.editTimetableThunk(newTimetable);
-                  props.updateTimetableThunk(addDataRow, check);
+                  if (
+                    props.dataRow &&
+                    props.dataRow.dayTable === props.daysForDate[date.getDay()]
+                  ) {
+                    newTimetable.unshift(addDataRow);
+                    props.editTimetableThunk(newTimetable);
+                    props.updateTimetableThunk(addDataRow, check);
+                  } else {
+                    setError(true);
+                    setTimeout(() => setError(false), 3000);
+                  }
                 }}
               >
                 Добавить

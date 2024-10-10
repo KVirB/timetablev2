@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 export default function RequireAuth({ children, role }) {
   const location = useLocation();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { user } = useAuth();
 
   // useEffect(() => {

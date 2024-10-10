@@ -4,6 +4,7 @@ import "../App/App.css";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import "ag-grid-enterprise";
+import { agGridRu } from "../../assets/agLocalization";
 import {
   getTimetableThunk,
   getDisciplineThunk,
@@ -16,12 +17,16 @@ import {
   deleteScheduleRowThunk,
   getRoomsThunk,
   getExcelScheduleZfThunk,
+  getScheduleThunk,
+  HideGroupThunk,
+  getHiddenGroupsThunk,
 } from "../../redux/actions/mainThunks";
 import { connect } from "react-redux";
 import ModalMain from "./ModalMain";
-import Select from "react-select-virtualized";
 import { Toaster } from "react-hot-toast";
 import ExcelModal from "./ExcelModal";
+import HideGroupModal from "./HideGroupModal";
+import ScheduleModal from "./ScheduleModal";
 
 const frameComparator = (valueA, valueB) => {
   const frame = ["1Корпус", "2Корпус", "4Корпус", "5Корпус", "Неизвестно"];
@@ -77,6 +82,27 @@ const timeComparator = (valueA, valueB) => {
 
   return indexA - indexB;
 };
+let daysForDate = [
+  "Воскресенье",
+  "Понедельник",
+  "Вторник",
+  "Среда",
+  "Четверг",
+  "Пятница",
+  "Суббота",
+];
+
+// const cellClass = (params) => {
+//   const rowData = params.api.getRowNode(params.rowIndex).data;
+//   const date = new Date(rowData.startDate);
+//   const dayMatch = rowData.dayTable === daysForDate[date.getDay()];
+//   console.log(params.rowIndex);
+//   console.log("Calculated Day:", daysForDate[date.getDay()]);
+//   console.log("DayTable Value:", rowData.dayTable);
+//   console.log("Day Match:", dayMatch);
+
+//   return dayMatch ? "unset-border" : "green-border";
+// };
 
 const Main = (props) => {
   const [columnDefs] = useState([
@@ -122,6 +148,18 @@ const Main = (props) => {
     {
       field: "startDate",
       headerName: "С",
+      cellStyle: (params) => {
+        if (params && params.data && params.data.startDate) {
+          if (params.data.startDate === params.data.endDate) {
+            const date = new Date(params.data.startDate);
+            const dayMatch =
+              params.data.dayTable === daysForDate[date.getDay()];
+            if (!dayMatch) {
+              return { color: "red" };
+            }
+          }
+        }
+      },
     },
     {
       field: "endDate",
@@ -132,23 +170,26 @@ const Main = (props) => {
   const [dataRow, setDataRow] = useState();
   const [maxId, setMaxId] = useState();
   const [gridApi, setGridApi] = useState(null);
-  const [filterText, setFilterText] = useState("");
   const [rowData, setRowData] = useState("");
 
   const onInputChange = (e) => {
-    setFilterText(e.target.value);
-    if (gridApi) {
-      gridApi.setQuickFilter(e.target.value);
-    }
+    gridApi.setGridOption("quickFilterText", e.target.value);
   };
 
   const handleDateChange = (e) => {
-    localStorage.setItem("date", e.target.value);
-    let date = new Date(e.target.value);
-    let newRowData = props.timetable.filter((item) => {
-      return new Date(item.startDate) >= date || item.startDate === null;
-    });
-    setRowData(newRowData);
+    let newRowData;
+    if (e.target.value === "") {
+      localStorage.removeItem("date");
+      newRowData = props.timetable;
+      setRowData(newRowData);
+    } else {
+      localStorage.setItem("date", e.target.value);
+      let date = new Date(e.target.value);
+      newRowData = props.timetable.filter((item) => {
+        return new Date(item.endDate) >= date || item.endDate === null;
+      });
+      setRowData(newRowData);
+    }
   };
   useEffect(() => {
     if (localStorage.getItem("date")) {
@@ -182,6 +223,7 @@ const Main = (props) => {
       },
     };
   }, []);
+
   const getRowStyle = useCallback((params) => {
     if (params.data && params.data.lessonId !== null) {
       return { background: "#FF8484" };
@@ -189,6 +231,7 @@ const Main = (props) => {
       return { background: "#83CF55" };
     }
   }, []);
+
   const gridOptions = useMemo(() => {
     return {
       getRowStyle: getRowStyle,
@@ -252,6 +295,24 @@ const Main = (props) => {
     setExcelIsOpen(false);
   };
 
+  const [HideGroupModalIsOpen, setHideGroupIsOpen] = useState(false);
+  const HideGroupOpenModal = () => {
+    setHideGroupIsOpen(true);
+    props.getHiddenGroupsThunk();
+  };
+  const HideGroupCloseModal = () => {
+    setHideGroupIsOpen(false);
+  };
+
+  const [ScheduleModalIsOpen, setScheduleIsOpen] = useState(false);
+  const ScheduleOpenModal = () => {
+    setScheduleIsOpen(true);
+    props.getHiddenGroupsThunk();
+  };
+  const ScheduleCloseModal = () => {
+    setScheduleIsOpen(false);
+  };
+
   if (props.timetable && props.timetable.length !== 0) {
     return (
       <>
@@ -271,6 +332,7 @@ const Main = (props) => {
           maxId={maxId}
           setDataRow={setDataRow}
           rooms={props.rooms}
+          daysForDate={daysForDate}
         ></ModalMain>
         <ExcelModal
           ExcelModalIsOpen={ExcelModalIsOpen}
@@ -281,6 +343,22 @@ const Main = (props) => {
           faculty={props.faculty}
           group={props.group}
         ></ExcelModal>
+        <HideGroupModal
+          HideGroupModalIsOpen={HideGroupModalIsOpen}
+          HideGroupOpenModal={HideGroupOpenModal}
+          HideGroupCloseModal={HideGroupCloseModal}
+          group={props.group}
+          HideGroupThunk={props.HideGroupThunk}
+          getHiddenGroupsThunk={props.getHiddenGroupsThunk}
+          hiddenGroups={props.hiddenGroups}
+        ></HideGroupModal>
+        <ScheduleModal
+          ScheduleModalIsOpen={ScheduleModalIsOpen}
+          ScheduleOpenModal={ScheduleOpenModal}
+          ScheduleCloseModal={ScheduleCloseModal}
+          teacher={props.teacher}
+          getScheduleThunk={getScheduleThunk}
+        ></ScheduleModal>
         <Toaster
           position="top-center"
           reverseOrder={false}
@@ -308,7 +386,8 @@ const Main = (props) => {
             <input
               className="control-input-search"
               type="text"
-              value={filterText}
+              // value={filterText}
+              id="filter-text-box"
               placeholder="Аудитория..."
               onChange={onInputChange}
             />
@@ -320,17 +399,13 @@ const Main = (props) => {
             ></input>
           </div>
           <div className="controls-button">
-            <button
-              className="control-button"
-              // onClick={getExcelScheduleThunk(
-              //   facultyId,
-              //   course,
-              //   faculty,
-              //   dateFromExcel,
-              //   dateToExcel
-              // )}
-              onClick={ExcelOpenModal}
-            >
+            <button className="control-button" onClick={ScheduleOpenModal}>
+              Расписание
+            </button>
+            <button className="control-button" onClick={HideGroupOpenModal}>
+              Скрыть группу
+            </button>
+            <button className="control-button" onClick={ExcelOpenModal}>
               Excel
             </button>
             <button
@@ -355,6 +430,7 @@ const Main = (props) => {
             rowData={rowData}
             columnDefs={columnDefs}
             gridOptions={gridOptions}
+            localeText={agGridRu}
             onGridReady={onGridReady}
             onRowClicked={handleRowClicked}
             onRowDoubleClicked={dataRow && openModal}
@@ -382,6 +458,7 @@ const mapStateToProps = (state) => {
     typeOfLesson: state.mainPage.typeOfLesson,
     faculty: state.mainPage.faculty,
     rooms: state.mainPage.rooms,
+    hiddenGroups: state.mainPage.hiddenGroups,
   };
 };
 const mapDispatchToProps = {
@@ -396,5 +473,8 @@ const mapDispatchToProps = {
   deleteScheduleRowThunk,
   getRoomsThunk,
   getExcelScheduleZfThunk,
+  getScheduleThunk,
+  HideGroupThunk,
+  getHiddenGroupsThunk,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Main);

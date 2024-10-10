@@ -6,6 +6,7 @@ import {
   EDIT_TIMETABLE,
   SET_FACULTIES,
   SET_ROOMS,
+  SET_HIDDENGROUPS,
 } from "../types/mainTypes";
 
 export const setTimetable = (timetable) => ({
@@ -26,6 +27,11 @@ export const setTeacher = (teacher) => ({
 export const setGroup = (group) => ({
   type: SET_GROUP,
   group: group,
+});
+
+export const setHiddenGroups = (hiddenGroups) => ({
+  type: SET_HIDDENGROUPS,
+  hiddenGroups: hiddenGroups,
 });
 
 export const editTimetable = (dataRow) => ({

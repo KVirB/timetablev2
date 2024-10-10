@@ -25,7 +25,7 @@ const ExcelModal = (props) => {
         className={"modal-window"}
         isOpen={props.ExcelModalIsOpen}
         onRequestClose={props.ExcelCloseModal}
-        contentLabel="Main Modal"
+        contentLabel="Excel Modal"
         overlayClassName={"modal_open"}
       >
         <div className="excel-div">

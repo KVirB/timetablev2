@@ -6,6 +6,7 @@ import {
   EDIT_TIMETABLE,
   SET_FACULTIES,
   SET_ROOMS,
+  SET_HIDDENGROUPS,
 } from "../types/mainTypes";
 
 let initialState = {
@@ -15,6 +16,7 @@ let initialState = {
   group: [],
   faculty: [],
   rooms: [],
+  hiddenGroups: [],
 };
 const weekdays = {
   0: "Понедельник",
@@ -75,12 +77,16 @@ const subGroup = {
 const lessonType = {
   PRACTICE: "Практическая",
   LAB: "Лабораторная",
+  SEMINAR: "Семинар",
   LECTURE: "Лекция",
   EXAM: "Экзамен",
   CONSULTATION: "Консультация",
   SCORE: "Зачёт",
-  DEFENSE: "Защита курсовой работы/проекта",
+  COURSE_PROJECT_DEFENSE: "Защита курсовой работы",
+  COURSE_WORK_DEFENSE: "Защита курсового проекта",
   EXAM_REVIEW: "Экзаменационный просмотр",
+  DIFF_SCORE: "Дифференцированный зачёт",
+  PRACTICE_DEFENSE: "Защита отчёта по практике",
   UNKNOWN: "Неизвестно",
 };
 const mainReducer = (state = initialState, action) => {
@@ -120,6 +126,11 @@ const mainReducer = (state = initialState, action) => {
       return {
         ...state,
         group: [...action.group],
+      };
+    case SET_HIDDENGROUPS:
+      return {
+        ...state,
+        hiddenGroups: action.hiddenGroups,
       };
     case EDIT_TIMETABLE:
       return {
